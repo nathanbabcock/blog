@@ -89,6 +89,10 @@ a:hover {
 }
 
 
+strong {
+  color: var(--color-accent);
+}
+
 .heading-link {
   color: var(--color-muted);
   text-decoration: none;

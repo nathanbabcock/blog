@@ -1,0 +1,37 @@
+---
+interface Props {
+  label?: string
+}
+
+const { label = "Aside" } = Astro.props
+---
+
+<aside>
+  <span class="label">{label}</span>
+  <slot />
+</aside>
+
+<style>
+  aside {
+    background: var(--color-surface);
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0 6px 6px 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    font-size: 0.9rem;
+  }
+
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  aside :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>
