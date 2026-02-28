@@ -17,7 +17,10 @@ const { Content } = await render(post)
 
 <BaseLayout title={post.data.title} ogImage={`/og/${post.id}.png`}>
   <a href="/" class="back" aria-label="Back to blog"><ArrowLeft size={20} /></a>
-  <h1 class="stagger" style="--i: 1">{post.data.title}</h1>
+  <h1 class="stagger" style="--i: 1">
+    {post.data.title}
+    {post.data.draft && <span class="draft">Draft</span>}
+  </h1>
   <time class="stagger" style="--i: 2" datetime={post.data.date.toISOString()}>
     {
       post.data.date.toLocaleDateString("en-US", {
@@ -68,5 +71,20 @@ const { Content } = await render(post)
     color: var(--color-muted);
     font-size: 0.85rem;
     margin-bottom: var(--spacing-xl);
+  }
+
+  .draft {
+    font-family: system-ui, sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--color-bg);
+    background: var(--color-accent);
+    border-radius: 4px;
+    padding: 0.15em 0.45em;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
   }
 </style>

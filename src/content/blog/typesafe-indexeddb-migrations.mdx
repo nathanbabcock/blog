@@ -1,6 +1,7 @@
 ---
 title: "Typesafe IndexedDB Migrations"
 date: 2026-02-28
+draft: true
 ---
 
 import Aside from "../../components/Aside.astro"
@@ -109,4 +110,39 @@ even within a single version!
 
 This allows us to catch errors which previously would have been impossible to
 detect. Preventing object store name collisions is trivial. In fact there's a
-wide class of runtime error behavior which can be entirely caught at compile-time.
+wide class of runtime error behavior which can be entirely caught at
+compile-time.
+
+
+## The `schema` phantom type helper
+
+For the most part the modus operandi here is to capture *types* when expressing
+*values* during initial database setup. It's zero overhead—you were passing
+those parameters at runtime anyways, might as well capture them in the type system.
+
+Where it gets tricky is declaring types on object stores. Within the
+`createObjectStore` function we're operating at the value level and we need to jump
+back into the type level somehow. The problem is that we're already inferring a generic param; that's
+what captures the constant properties like `name: 'users'` and `primaryKey:
+'id'`.
+
+Potential solutions include:
+
+- **Partial inference:** Inference in Typescript is unfortunately
+[all-or-nothing](https://github.com/microsoft/TypeScript/issues/10571) so we
+can't infer a first parameter while allowing the user to specify a second.
+
+That means a second function invocation is unavoidable.
+
+- **Currying:** Personally I think this is a mess. The way it forces different runtime semantics purely in service of
+  typesafety rubs me the wrong way: `v.createObjectStore<{ type: "blah" }>()({
+  name: "name" })`
+- **Nested builder:** Same thing as currying but with a label to make it more
+  readable: `v.createObjectStore({ name: "name" }).withType({ type: "blah" })`.
+  Slight improvement but still a bit painful.
+- **Phantom type helper:** Add a no-op function whose only purpose is to be a
+  holder for an explicit generic type parameter
+
+It's not perfect in the sense that it's a tiny piece of runtime semantics
+cleverness that a first-time user might not understand the reason for (the same
+kind of problem I bemoaned about currying).

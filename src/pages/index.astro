@@ -17,7 +17,10 @@ const posts = (await getCollection("blog")).sort(
     {
       posts.map((post, i) => (
         <li class="stagger" style={`--i: ${i + 1}`}>
-          <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+          <a href={`/blog/${post.id}/`} class:list={[{ "has-draft": post.data.draft }]}>
+            <span>{post.data.title}</span>
+            {post.data.draft && <span class="draft">Draft</span>}
+          </a>
           <time datetime={post.data.date.toISOString()}>
             {post.data.date.toLocaleDateString("en-US", {
               year: "numeric",
@@ -70,9 +73,32 @@ const posts = (await getCollection("blog")).sort(
     gap: var(--spacing-md);
   }
 
+  li a {
+    text-decoration: none;
+  }
+
   time {
     color: var(--color-muted);
     font-size: 0.85rem;
     white-space: nowrap;
+  }
+
+  a.has-draft {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+
+  .draft {
+    font-family: system-ui, sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--color-bg);
+    background: var(--color-accent);
+    border-radius: 4px;
+    padding: 0.15em 0.45em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
   }
 </style>
