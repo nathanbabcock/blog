@@ -1,14 +1,15 @@
 ---
 import { Github, Linkedin } from "@lucide/astro"
+import { GITHUB_URL, LINKEDIN_URL } from "../config"
 ---
 
 <footer>
   <span>&copy; {new Date().getFullYear()} Nathan Babcock</span>
   <nav>
-    <a href="https://github.com/nathanbabcock" aria-label="GitHub">
+    <a href={GITHUB_URL} aria-label="GitHub" target="_blank" rel="noopener noreferrer">
       <Github size={18} />
     </a>
-    <a href="https://linkedin.com/in/nathanbabcock" aria-label="LinkedIn">
+    <a href={LINKEDIN_URL} aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
       <Linkedin size={18} />
     </a>
   </nav>
@@ -40,6 +41,6 @@ import { Github, Linkedin } from "@lucide/astro"
   }
 
   a:hover {
-    color: var(--color-accent);
+    color: var(--color-muted);
   }
 </style>
