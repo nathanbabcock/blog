@@ -9,14 +9,14 @@ const posts = (await getCollection("blog")).sort(
 ---
 
 <BaseLayout title="Nathan Babcock">
-  <header>
+  <header class="stagger" style="--i: 0">
     <h1>Blog</h1>
     <a href="/rss.xml" aria-label="RSS Feed"><Rss size={18} /></a>
   </header>
   <ul>
     {
-      posts.map((post) => (
-        <li>
+      posts.map((post, i) => (
+        <li class="stagger" style={`--i: ${i + 1}`}>
           <a href={`/blog/${post.id}/`}>{post.data.title}</a>
           <time datetime={post.data.date.toISOString()}>
             {post.data.date.toLocaleDateString("en-US", {

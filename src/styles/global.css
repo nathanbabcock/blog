@@ -43,12 +43,39 @@ h1 {
   color: var(--color-accent);
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
 main {
   flex: 1;
   width: 100%;
   max-width: var(--content-width);
   margin: 0 auto;
   padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.stagger {
+  animation: fade-in 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes fade-only {
+  from { opacity: 0; }
+}
+
+.fade-in {
+  animation: fade-only 0.4s 0.3s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger,
+  .fade-in {
+    animation: none;
+  }
 }
 
 a {
