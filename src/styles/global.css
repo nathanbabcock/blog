@@ -80,12 +80,15 @@ main {
 
 a {
   color: var(--color-accent);
-  text-decoration: none;
-  transition: color 0.15s ease;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-accent);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 a:hover {
   color: var(--color-accent-hover);
+  text-decoration-color: var(--color-accent-hover);
 }
 
 
