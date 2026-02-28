@@ -1,6 +1,5 @@
 import satori from "satori"
 import { Resvg, initWasm } from "@resvg/resvg-wasm"
-import resvgWasm from "@resvg/resvg-wasm/index_bg.wasm?url"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
@@ -12,7 +11,8 @@ let wasmInitialized = false
 
 export async function generateOgImage(title: string, date?: string) {
   if (!wasmInitialized) {
-    await initWasm(fetch(resvgWasm))
+    const wasmPath = resolve(process.cwd(), "node_modules/@resvg/resvg-wasm/index_bg.wasm")
+    await initWasm(readFileSync(wasmPath))
     wasmInitialized = true
   }
 
