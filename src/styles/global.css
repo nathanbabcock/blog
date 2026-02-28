@@ -89,6 +89,23 @@ a:hover {
 }
 
 
+.heading-link {
+  color: var(--color-muted);
+  text-decoration: none;
+  opacity: 0;
+  margin-left: -1.2em;
+  padding-right: 0.3em;
+  transition: opacity 0.15s ease;
+}
+
+.heading-link::after {
+  content: "#";
+}
+
+:is(h1, h2, h3, h4):hover .heading-link {
+  opacity: 1;
+}
+
 /* Prose styles for rendered markdown */
 .prose h1,
 .prose h2,

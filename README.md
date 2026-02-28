@@ -8,3 +8,8 @@ Personal web dev blog
 - Typesafe CSS grid
 - Perceptually uniform color palettes
 - A compiler for function inverses in Typescript
+
+## Style guide
+
+- First person
+- Concise
