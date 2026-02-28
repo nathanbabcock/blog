@@ -6,10 +6,13 @@ import rehypeExternalLinks from "rehype-external-links"
 import rehypeSlug from "rehype-slug"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
   devToolbar: { enabled: false },
   site: "https://nathanbabcock.dev",
   integrations: [react(), mdx(), sitemap()],
+
   markdown: {
     shikiConfig: {
       theme: "vitesse-dark",
@@ -20,4 +23,6 @@ export default defineConfig({
       [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
     ],
   },
+
+  adapter: cloudflare({ sessions: false }),
 })

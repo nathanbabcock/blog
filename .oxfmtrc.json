@@ -1,5 +1,7 @@
 {
   "semi": false,
   "printWidth": 100,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "ignorePatterns": ["wrangler.jsonc"],
+  "insertFinalNewline": true
 }

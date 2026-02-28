@@ -1,16 +1,17 @@
 ---
-import { Github, Linkedin } from "@lucide/astro"
 import { GITHUB_URL, LINKEDIN_URL } from "../config"
+import GithubIcon from "./icons/GithubIcon.astro"
+import LinkedinIcon from "./icons/LinkedinIcon.astro"
 ---
 
 <footer class="fade-in">
   <span>&copy; {new Date().getFullYear()} Nathan Babcock</span>
   <nav>
     <a href={GITHUB_URL} aria-label="GitHub" target="_blank" rel="noopener noreferrer">
-      <Github size={18} />
+      <GithubIcon size={18} />
     </a>
     <a href={LINKEDIN_URL} aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
-      <Linkedin size={18} />
+      <LinkedinIcon size={18} />
     </a>
   </nav>
 </footer>
