@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content"
+import { Rss } from "@lucide/astro"
 import BaseLayout from "../layouts/BaseLayout.astro"
 
 const posts = (await getCollection("blog")).sort(
@@ -8,7 +9,10 @@ const posts = (await getCollection("blog")).sort(
 ---
 
 <BaseLayout title="Nathan Babcock">
-  <h1>Nathan Babcock</h1>
+  <header>
+    <h1>Blog</h1>
+    <a href="/rss.xml" aria-label="RSS Feed"><Rss size={18} /></a>
+  </header>
   <ul>
     {
       posts.map((post) => (
@@ -19,6 +23,7 @@ const posts = (await getCollection("blog")).sort(
               year: "numeric",
               month: "short",
               day: "numeric",
+              timeZone: "America/Chicago",
             })}
           </time>
         </li>
@@ -28,10 +33,27 @@ const posts = (await getCollection("blog")).sort(
 </BaseLayout>
 
 <style>
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-surface);
+  }
+
   h1 {
     font-weight: 300;
-    font-size: 1.6rem;
-    margin-bottom: var(--spacing-xl);
+    font-size: 1.1rem;
+    color: var(--color-muted);
+  }
+
+  header a {
+    color: var(--color-muted);
+  }
+
+  header a:hover {
+    color: var(--color-accent);
   }
 
   ul {

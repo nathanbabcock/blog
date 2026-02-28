@@ -23,6 +23,7 @@ const { Content } = await render(post)
         year: "numeric",
         month: "long",
         day: "numeric",
+        timeZone: "America/Chicago",
       })
     }
   </time>
@@ -36,6 +37,7 @@ const { Content } = await render(post)
     display: inline-block;
     margin-bottom: var(--spacing-lg);
     font-size: 0.9rem;
+    color: var(--color-muted);
   }
 
   h1 {
