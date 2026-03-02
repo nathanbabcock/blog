@@ -15,6 +15,11 @@
   --spacing-xl: 3rem;
 }
 
+::selection {
+  background: rgba(196, 154, 108, 0.3);
+  color: var(--color-text);
+}
+
 *,
 *::before,
 *::after {
