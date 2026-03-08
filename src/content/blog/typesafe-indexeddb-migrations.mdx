@@ -12,115 +12,118 @@ I feel a certain cognitive dissonance when working with IndexedDB in Typescript.
   Let's refer to it as "IDB" from now on, the browser-native database, not to be confused with [`idb`](https://github.com/facebook/idb), the third-party wrapper library around it.
 </Aside>
 
-## Thinking in Typescript mode
+On the one hand, Typescript provides all the tools needed to model data and its transformations with incredible precision and
+fidelity. But it's frozen in time, and the schema only models the latest or
+"final" version of the database.
 
-On the one hand, when thinking in Typescript mode I have all the tools at my
-disposal to model data and its transformations with incredible precision and
-fidelity.
+## Upgrade needed
 
-That mindset carries over to reasoning about the database after it's opened. I
-have a database schema type. I know valid names of every object store and get
-autocomplete for them. Within those I know not only the shape of those rows but
-even the names of indexes configured on them.
+One of the first realities IDB forces you to confront is the existence of
+multiple versions of the database at different points in time. You've got the
+latest version of the database you're working on in dev, then the one your users
+are running that was pushed to prod last week, and maybe even a stale copy from
+several versions back from a client that hasn't visited the site in a few months. This concept
+of version migrations is core to IDB's design, and the API forces you to deal
+with it from the moment you first open the database, when an [`upgradeneeded`](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest/upgradeneeded_event)
+event will fire so you can work through the process of bringing an older DB
+version up to data with the canonical version that your codebase will be dealing
+with (the one that matches the Typescript schema you declared). That might
+involve adding or removing object stores, adding new fields to or renaming
+existing stores, or running custom migration code to transform the structure of
+data from one version to the next.
 
-## Thinking in IDB mode
+The problem is that the actual migration code is a second source of truth about
+the database which can easily drift from the schema. If you add a
+new required field to an object store but you forget to add a default or
+fallback to old rows that don't have it yet, the schema will claim that the
+property is always there. But old data in the database won't match that
+assumption, potentially causing null pointer exceptions at runtime in places where
+Typescript claims it's impossible. There's a divergence between what the schema
+says and what the migrations say.
 
-The cracks start to show when I need to add a new database version.
-Unfortunately that's something that happens early and often. During dev it's not
-so bad, I can just update the schema and move on. Maybe I even delete the old
-migration code, wipe my local DB, and just pretend it was all one version from
-the get-go.
+The core
+problem is that the schema defined on the database client isn't much better than
+one big unchecked typecast.
 
-Once this database has shipped in prod it dials up the stress a notch. Now I
-can't delete the old version migration code because it's already out there in
-the wild. It might be cached on a CDN somewhere still being served days or weeks
-later. Wiping the database is not an option now because my users' precious data
-is in there. That means I need to be extra careful with the subsequent
-migrations.
+## Native imperative API
 
-This is exactly the moment when I'd want Typescript to have my back, and let me
-know if I'm referencing a property in v5 that was deleted back in v3. Or if a
-property that I claimed was going to be there is actually missing because I
-added it as non-optional without specifying any kind of fallback or migration
-when it was introduced.
+If you haven't had the pleasure, IDB's native API is imperative and
+object-oriented in style.
 
-The core problem here (which can no longer be avoided now and must be reasoned
-about) is that **the entire schema I declare for my database is just one great big
-unchecked typecast**. There's a second source of truth present in the codebase, which is
-the actual series of version migrations which construct the database meant to
-satisfy that schema. If those drift apart, nothing will be flagged at compile
-time and no alarm bells will go off in CI.
+```ts
+const request = indexedDB.open('mydb', 1)
 
-## Rationalizing
+request.onupgradeneeded = (event) => {
+  const db = request.result
+  if (event.oldVersion < 1) {
+    db.createObjectStore('users', { keyPath: 'id' })
+  }
+}
+```
 
-And…maybe it's not that big of a deal. It requires a bit of discipline, some
-knowledge of the underlying mechanics of IDB, and a minor context switch. A
-source of friction, but manageable on the whole.
+Typesript isn't able to statically analyze the resulting sequence of method
+calls in a way that narrows or infers type information. Every statement could
+potentially have unknown side effects or interact with the prototype chain in
+unpredictable ways, not to mention the potential effects of branching and
+control flow around the statements, so it's not really safe to make any
+assumptions about it at compile time.
 
-That's me speaking from a solo perspective—if multiple teams are interacting with the same
-IDB instance, are they all on the same page about these gotchas? Is it on the
-seniors to catch it in code review?
+What would it look like if we were able to maintain that typesafety through
+every successive version of the database, and get compile-time checking for whether
+declared schema matches what the migrations say? Or even infer
+the final schema directly from the migrations themselves as the source of truth?
 
-And then the real question: do you trust your AI agents to safely do these
-migrations? Is the migration code they write always going to match the final
-schema? Or will they sometimes do exactly what you ask, even if that's adding a
-property that's not backwards-compatible?
+## Chained builder API
 
-## Preserving type information
-
-The cognitive dissonance stems from a frustration that these rules about safe
-migration patterns are, strictly speaking, the type of thing Typescript is
-perfect at describing (is schema v2 assignable to schema v3?). But IDB's
-migration API feels so legacy and imperative that all type information gets lost
-along the way.
-
-The solution is to build a wrapper around the migration APIs which accumulate
-all the relevant information. The true final state of the database schema can be
-computed at the end of the chain of migrations, and typechecked against your
-claimed type signature for the final DB schema.
-
-## Builder API
-
-In practice it looks like this:
+The first step towards tackling this is to wrap IDB's native API in something
+that's more conducive to getting rich type information to flow across versions
+of the database.
 
 ```ts
 import { createMigrations, schema } from 'idb-builder'
 
-const migrations = createMigrations().version(1, v =>
-  v.createObjectStore({
-    name: 'users',
-    schema: schema<{
-      id: string
-      name: string
-      email: string
-    }>(),
-    primaryKey: 'id',
-  })
-)
+const migrations = createMigrations()
+  .version(1, v =>
+    v.createObjectStore({
+      name: 'users',
+      primaryKey: 'id',
+    })
+  )
 ```
 
-This API translates directly to native, imperative IDB calls (in this case,
-[`IDBDatabase.createObjectStore`](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/createObjectStore)).
-But structuring it in this chained format allows Typescript to capture constant
-parameters and track return values as they flow through the chain.
+At the top level, there's a sequence of chained `.version()` calls. The return
+type of one version is carried into the method call of the next version.
 
-The result is a much finer level of granularity. Not only do we know what object
-store names are valid at the end, we know that state at every single version—or
-even within a single version!
+Within versions, the same pattern is used: a version builder (the `v` param) is
+chained with method calls which carry granular type information through their
+return value: exactly what object stores have been added, their names, their
+configuration of primary keys, and more.
 
-This allows us to catch errors which previously would have been impossible to
-detect. Preventing object store name collisions is trivial. In fact there's a
-wide class of runtime error behavior which can be entirely caught at
-compile-time.
+Under the hood, the API translates directly to native, imperative IDB calls (in this case,
+[`IDBDatabase.createObjectStore`](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/createObjectStore))
+without any changes in behavior. It's just a different way of expressing the
+same thing which is more introspectable by the Typescript compiler.
 
+This
+style of API is sometimes referred to as
+a ["Fluent interface"](https://en.wikipedia.org/wiki/Fluent_interface) and is an effective
+means for encoding the API contract into the typesystem in a way that separate
+imperative statements cannot capture. It also has DX advantages for complex or
+unfamiliar APIs, because at every method call you get autocomplete suggestions
+on the exact set of operations and arguments that are valid to call at that
+point in the program. For example,
+[`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg) uses this
+technique to make FFmpeg's argument syntax easier to
+navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a way that's more aligned to how we're
+using it here--to capture rich type information as handlers are registered and aggregate them into a single
+client interface.
 
-## The `schema` phantom type helper
+## Phantom types
 
-For the most part the modus operandi here is to capture *types* when expressing
-*values* during initial database setup. It's zero overhead—you were passing
-those parameters at runtime anyways, might as well capture them in the type system.
+The next piece of the puzzle is how to declare a schema for each object store at
+the time of its creation.
 
-Where it gets tricky is declaring types on object stores. Within the
+Within the
 `createObjectStore` function we're operating at the value level and we need to jump
 back into the type level somehow. The problem is that we're already inferring a generic param; that's
 what captures the constant properties like `name: 'users'` and `primaryKey:
