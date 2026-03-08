@@ -24,5 +24,5 @@ export default defineConfig({
     ],
   },
 
-  adapter: cloudflare({ sessions: false }),
+  adapter: cloudflare({ imageService: "compile" }),
 })
