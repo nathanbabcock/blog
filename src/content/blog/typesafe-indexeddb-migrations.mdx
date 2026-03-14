@@ -121,7 +121,7 @@ navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a wa
 using it here--to capture rich type information as handlers are registered and aggregate them into a single
 client interface.
 
-## Defining schemas via phantom types
+## Explicit vs. inferred generic parameters
 
 The next piece of the puzzle is how to declare a schema for each object store at
 the time of its creation.
@@ -129,7 +129,8 @@ the time of its creation.
 This is where we'd typically reach for an explicit generic type parameter:
 
 ```ts
-createObjectStore<{ myField: string }>()
+createObjectStore<{ myField: string }>({ name: "myStore" })
+// ❌ Cannot infer one generic while another is provided explicitly
 ```
 
 The problem is that we're already
@@ -140,21 +141,59 @@ In a perfect world we'd use **partial inference** to require that the first gene
 is provided by the caller while the second one is inferred from the parameters passed. Unfortunately, inference in Typescript is
 [all-or-nothing](https://github.com/microsoft/TypeScript/issues/10571), so we
 have to either infer all params or explictly provide all. This either kills the
-DX by requiring the programmer to repeat information twice (once at the
-type-level and once at the value-level), or cripples the system's ability to
+DX by requiring the programmer to repeat information twice, or cripples the system's ability to
 capture the information it needs about the database.
 
-That means that a second function invocation is unavoidable.
+On the other hand, moving all these settings into the generic type parameter
+would make these values inaccessible at runtime, when we need to apply them
+while executing the database migrations. That means a unified approach like this
+also doesn't work:
 
-- **Currying:** Personally I think this is a mess. The way it forces different runtime semantics purely in service of
-  typesafety rubs me the wrong way: `v.createObjectStore<{ type: "blah" }>()({
-  name: "name" })`
-- **Nested builder:** Same thing as currying but with a label to make it more
-  readable: `v.createObjectStore({ name: "name" }).withType({ type: "blah" })`.
-  Slight improvement but still a bit painful.
-- **Phantom type helper:** Add a no-op function whose only purpose is to be a
-  holder for an explicit generic type parameter
+```ts
+createObjectStore({ name: "myStore", schema: { myField: string }})
+// ❌ Store name only exists at compile-time
+```
+
+## Phantom type helper
+
+We need to introduce a second function call as a kind of "slot" to insert type
+information into.
+
+```ts
+createObjectStore({ name: "myStore", schema: type<{ myField: string }>()})
+// ✅ Schema is captured by a phantom type helper
+```
+
+This `type` helper is a little bit of trickery: its type signature will claim to
+return a value matching the generic type param, but in reality, it's actually a
+no-op and never gets used. It exists solely to pass type information to the
+`createObjectStore` call.
 
 It's not perfect in the sense that it's a tiny piece of runtime semantics
-cleverness that a first-time user might not understand the reason for (the same
-kind of problem I bemoaned about currying).
+cleverness that a first-time user might not understand the purpose of. But it's
+still relatively readable at a glance.
+
+## Handling schema updates
+
+The next challenge is how to handle modifying an object store in subsequent
+migrations. This also isn't trivial; it's essentially a function that takes a
+*type* as an input and returns a modified type as a result. This also can be
+modelled as a Typescript generic:
+
+```ts
+type NewSchema<OldSchema> = OldSchema & { myNewField: string }
+```
+
+But again, it's awkward to insert into a chained builder in a way that
+automatically binds the `OldSchema` based on where the migration is applied in
+the chain.
+
+The solution is to provide just a type "delta" which is deeply merged into the
+store's type at time of invocation. So it looks like:
+
+```ts
+v
+ .createObjectStore({ name: "myStore", schema: type<{ myField: string }>()})
+ .modifyStoreSchema({ name: "myStore", modifySchema: type<{ myNewField: string}>()})
+// final store schema: `{ myField: string, myNewField: string }`
+```
