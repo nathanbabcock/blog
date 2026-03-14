@@ -16,7 +16,7 @@ On the one hand, Typescript provides all the tools needed to model data and its 
 fidelity. But it's frozen in time, and the schema only models the latest or
 "final" version of the database.
 
-## Upgrade needed
+## Database migrations are difficult
 
 One of the first realities IDB forces you to confront is the existence of
 multiple versions of the database at different points in time. You've got the
@@ -31,6 +31,8 @@ with (the one that matches the Typescript schema you declared). That might
 involve adding or removing object stores, adding new fields to or renaming
 existing stores, or running custom migration code to transform the structure of
 data from one version to the next.
+
+## Upgrade needed
 
 The problem is that the actual migration code is a second source of truth about
 the database which can easily drift from the schema. If you add a
@@ -48,7 +50,8 @@ one big unchecked typecast.
 ## Native imperative API
 
 If you haven't had the pleasure, IDB's native API is imperative and
-object-oriented in style.
+object-oriented in style. It predates async and promises in Javascript, so it
+also uses callbacks pretty heavily.
 
 ```ts
 const request = indexedDB.open('mydb', 1)
@@ -118,24 +121,30 @@ navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a wa
 using it here--to capture rich type information as handlers are registered and aggregate them into a single
 client interface.
 
-## Phantom types
+## Defining schemas via phantom types
 
 The next piece of the puzzle is how to declare a schema for each object store at
 the time of its creation.
 
-Within the
-`createObjectStore` function we're operating at the value level and we need to jump
-back into the type level somehow. The problem is that we're already inferring a generic param; that's
-what captures the constant properties like `name: 'users'` and `primaryKey:
-'id'`.
+This is where we'd typically reach for an explicit generic type parameter:
 
-Potential solutions include:
+```ts
+createObjectStore<{ myField: string }>()
+```
 
-- **Partial inference:** Inference in Typescript is unfortunately
-[all-or-nothing](https://github.com/microsoft/TypeScript/issues/10571) so we
-can't infer a first parameter while allowing the user to specify a second.
+The problem is that we're already
+binding a generic type to infer and capture the literal types passed as
+parameters, such as object store name, primary key, etc.
 
-That means a second function invocation is unavoidable.
+In a perfect world we'd use **partial inference** to require that the first generic
+is provided by the caller while the second one is inferred from the parameters passed. Unfortunately, inference in Typescript is
+[all-or-nothing](https://github.com/microsoft/TypeScript/issues/10571), so we
+have to either infer all params or explictly provide all. This either kills the
+DX by requiring the programmer to repeat information twice (once at the
+type-level and once at the value-level), or cripples the system's ability to
+capture the information it needs about the database.
+
+That means that a second function invocation is unavoidable.
 
 - **Currying:** Personally I think this is a mess. The way it forces different runtime semantics purely in service of
   typesafety rubs me the wrong way: `v.createObjectStore<{ type: "blah" }>()({

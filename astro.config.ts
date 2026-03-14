@@ -1,4 +1,4 @@
-import { defineConfig } from "astro/config"
+import { defineConfig, fontProviders } from "astro/config"
 import react from "@astrojs/react"
 import mdx from "@astrojs/mdx"
 import sitemap from "@astrojs/sitemap"
@@ -24,5 +24,17 @@ export default defineConfig({
     ],
   },
 
-  adapter: cloudflare({ imageService: "compile" }),
+  fonts: [{
+    provider: fontProviders.local(),
+    name: "Lora",
+    cssVariable: "--font-lora",
+    options: {
+      variants: [
+        { src: ["./src/assets/fonts/Lora-Regular.ttf"], weight: "400", style: "normal" },
+        { src: ["./src/assets/fonts/Lora-Bold.ttf"], weight: "700", style: "normal" },
+      ],
+    },
+  }],
+
+  adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
 })

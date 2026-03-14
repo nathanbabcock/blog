@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css"
+import { Font } from "astro:assets"
 import { ClientRouter } from "astro:transitions"
 import Footer from "../components/Footer.astro"
 
@@ -33,6 +34,7 @@ const ogImageURL = new URL(ogImage ?? "/og/index.png", Astro.site)
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
+    <Font cssVariable="--font-lora" preload />
     <ClientRouter />
   </head>
   <body>
