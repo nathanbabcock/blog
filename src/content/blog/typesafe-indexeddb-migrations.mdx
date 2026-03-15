@@ -107,19 +107,26 @@ Under the hood, the API translates directly to native, imperative IDB calls (in 
 without any changes in behavior. It's just a different way of expressing the
 same thing which is more introspectable by the Typescript compiler.
 
-This
-style of API is sometimes referred to as
-a ["Fluent interface"](https://en.wikipedia.org/wiki/Fluent_interface) and is an effective
-means for encoding the API contract into the typesystem in a way that separate
-imperative statements cannot capture. It also has DX advantages for complex or
-unfamiliar APIs, because at every method call you get autocomplete suggestions
-on the exact set of operations and arguments that are valid to call at that
-point in the program. For example,
-[`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg) uses this
-technique to make FFmpeg's argument syntax easier to
-navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a way that's more aligned to how we're
-using it here--to capture rich type information as handlers are registered and aggregate them into a single
-client interface.
+
+<Aside>
+  This
+  style of API is sometimes referred to as
+  a ["Fluent interface"](https://en.wikipedia.org/wiki/Fluent_interface) and is an effective
+  means for encoding the API contract into the typesystem in a way that separate
+  imperative statements cannot capture.
+
+  It also has DX advantages for complex or
+  unfamiliar APIs, because at every method call you get autocomplete suggestions
+  on the exact set of operations and arguments that are valid to call at that
+  point in the program.
+
+  For example,
+  [`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg) uses this
+  technique to make FFmpeg's argument syntax easier to
+  navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a way that's more aligned to how we're
+  using it here--to capture rich type information as handlers are registered and aggregate them into a single
+  client interface.
+</Aside>
 
 ## Explicit vs. inferred generic parameters
 
