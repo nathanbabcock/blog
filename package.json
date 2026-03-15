@@ -42,6 +42,9 @@
       "esbuild",
       "sharp",
       "workerd"
-    ]
+    ],
+    "overrides": {
+      "zod": "4.1.12"
+    }
   }
 }

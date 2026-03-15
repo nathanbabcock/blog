@@ -5,6 +5,7 @@ draft: true
 ---
 
 import Aside from "../../components/Aside.astro"
+import GithubRepo from "../../components/GithubRepo.astro"
 
 I feel a certain cognitive dissonance when working with IndexedDB in Typescript.
 
@@ -180,7 +181,7 @@ It's not perfect in the sense that it's a tiny piece of runtime semantics
 cleverness that a first-time user might not understand the purpose of. But it's
 still relatively readable at a glance.
 
-## Handling schema updates
+## Schema update deltas
 
 The next challenge is how to handle modifying an object store in subsequent
 migrations. This also isn't trivial; it's essentially a function that takes a
@@ -201,6 +202,29 @@ store's type at time of invocation. So it looks like:
 ```ts
 v
  .createObjectStore({ name: "myStore", schema: type<{ myField: string }>()})
- .modifyStoreSchema({ name: "myStore", modifySchema: type<{ myNewField: string}>()})
+ .updateStoreSchema({ name: "myStore", modifySchema: type<{ myNewField: string }>()})
 // final store schema: `{ myField: string, myNewField: string }`
 ```
+
+- Fields can be removed by setting them to `never`
+- The merging behavior happens recursively at each level of nesting
+- If the final schema after updates is not backwards-compatible, we can require
+  at compile-time that a backfill or transform function is provided
+
+## Lifting runtime errors to compile time
+
+TODO
+
+## Documentation as tests
+
+TODO
+
+## LLM-assisted verification
+
+TODO
+
+## Git repo
+
+Check out the full repo here using all the techniques introduced in this article:
+
+<GithubRepo repo="nathanbabcock/idb-builder" />
