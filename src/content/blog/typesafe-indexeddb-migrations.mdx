@@ -10,7 +10,8 @@ import GithubRepo from "../../components/GithubRepo.astro"
 I feel a certain cognitive dissonance when working with IndexedDB in Typescript.
 
 <Aside>
-  Let's refer to it as "IDB" from now on, the browser-native database, not to be confused with [`idb`](https://github.com/facebook/idb), the third-party wrapper library around it.
+  Let's refer to it as "IDB" from now on, the browser-native database, not to be confused with
+  [`idb`](https://github.com/facebook/idb), the third-party wrapper library around it.
 </Aside>
 
 On the one hand, Typescript provides all the tools needed to model data and its transformations with incredible precision and
@@ -55,12 +56,12 @@ object-oriented in style. It predates async and promises in Javascript, so it
 also uses callbacks pretty heavily.
 
 ```ts
-const request = indexedDB.open('mydb', 1)
+const request = indexedDB.open("mydb", 1)
 
 request.onupgradeneeded = (event) => {
   const db = request.result
   if (event.oldVersion < 1) {
-    db.createObjectStore('users', { keyPath: 'id' })
+    db.createObjectStore("users", { keyPath: "id" })
   }
 }
 ```
@@ -84,15 +85,14 @@ that's more conducive to getting rich type information to flow across versions
 of the database.
 
 ```ts
-import { createMigrations, schema } from 'idb-builder'
+import { createMigrations, schema } from "idb-builder"
 
-const migrations = createMigrations()
-  .version(1, v =>
-    v.createObjectStore({
-      name: 'users',
-      primaryKey: 'id',
-    })
-  )
+const migrations = createMigrations().version(1, (v) =>
+  v.createObjectStore({
+    name: "users",
+    primaryKey: "id",
+  }),
+)
 ```
 
 At the top level, there's a sequence of chained `.version()` calls. The return
@@ -108,7 +108,6 @@ Under the hood, the API translates directly to native, imperative IDB calls (in 
 without any changes in behavior. It's just a different way of expressing the
 same thing which is more introspectable by the Typescript compiler.
 
-
 <Aside>
   This
   style of API is sometimes referred to as
@@ -116,17 +115,18 @@ same thing which is more introspectable by the Typescript compiler.
   means for encoding the API contract into the typesystem in a way that separate
   imperative statements cannot capture.
 
-  It also has DX advantages for complex or
-  unfamiliar APIs, because at every method call you get autocomplete suggestions
-  on the exact set of operations and arguments that are valid to call at that
-  point in the program.
+It also has DX advantages for complex or
+unfamiliar APIs, because at every method call you get autocomplete suggestions
+on the exact set of operations and arguments that are valid to call at that
+point in the program.
 
-  For example,
-  [`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg) uses this
-  technique to make FFmpeg's argument syntax easier to
-  navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a way that's more aligned to how we're
-  using it here--to capture rich type information as handlers are registered and aggregate them into a single
-  client interface.
+For example,
+[`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg) uses this
+technique to make FFmpeg's argument syntax easier to
+navigate. It's also used by [Hono RPC](https://hono.dev/docs/guides/rpc) in a way that's more aligned to how we're
+using it here--to capture rich type information as handlers are registered and aggregate them into a single
+client interface.
+
 </Aside>
 
 ## Explicit vs. inferred generic parameters
@@ -158,17 +158,18 @@ while executing the database migrations. That means a unified approach like this
 also doesn't work:
 
 ```ts
-createObjectStore({ name: "myStore", schema: { myField: string }})
+createObjectStore({ name: "myStore", schema: { myField: string } })
 // ❌ Store name only exists at compile-time
 ```
 
 ## Phantom type helper
 
-We need to introduce a second function call as a kind of "slot" to insert type
+We need to introduce a second function call as a kind of "slot" to insert
+explicit type
 information into.
 
 ```ts
-createObjectStore({ name: "myStore", schema: type<{ myField: string }>()})
+createObjectStore({ name: "myStore", schema: type<{ myField: string }>() })
 // ✅ Schema is captured by a phantom type helper
 ```
 
@@ -185,7 +186,7 @@ still relatively readable at a glance.
 
 The next challenge is how to handle modifying an object store in subsequent
 migrations. This also isn't trivial; it's essentially a function that takes a
-*type* as an input and returns a modified type as a result. This also can be
+_type_ as an input and returns a modified type as a result. This also can be
 modelled as a Typescript generic:
 
 ```ts
@@ -200,9 +201,10 @@ The solution is to provide just a type "delta" which is deeply merged into the
 store's type at time of invocation. So it looks like:
 
 ```ts
-v
- .createObjectStore({ name: "myStore", schema: type<{ myField: string }>()})
- .updateStoreSchema({ name: "myStore", modifySchema: type<{ myNewField: string }>()})
+v.createObjectStore({ name: "myStore", schema: type<{ myField: string }>() }).updateStoreSchema({
+  name: "myStore",
+  modifySchema: type<{ myNewField: string }>(),
+})
 // final store schema: `{ myField: string, myNewField: string }`
 ```
 
@@ -212,8 +214,6 @@ v
   at compile-time that a backfill or transform function is provided
 
 ## Lifting runtime errors to compile time
-
-TODO
 
 ## Documentation as tests
 
