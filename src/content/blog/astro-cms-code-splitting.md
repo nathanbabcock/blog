@@ -1,5 +1,6 @@
 ---
 title: "Building a CMS live preview with nested Astro islands"
+description: "Rendering the same CMS content blocks statically in production and as hydrated islands in live preview, using Astro islands and a shared component registry."
 date: 2026-10-17
 draft: true
 ---

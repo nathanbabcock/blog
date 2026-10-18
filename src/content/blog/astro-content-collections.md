@@ -1,5 +1,6 @@
 ---
 title: "API design lessons from Astro content collections"
+description: "Pain points from integrating Contentful with Astro content collections, and the API design lessons they suggest."
 date: 2026-05-11
 draft: false
 ---

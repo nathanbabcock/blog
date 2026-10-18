@@ -1,5 +1,6 @@
 ---
 title: "Typesafe IndexedDB migrations"
+description: "Keeping IndexedDB migrations and TypeScript schemas from drifting apart by deriving types from the migrations themselves."
 date: 2026-02-28
 draft: false
 ---
@@ -213,7 +214,7 @@ v.createObjectStore({ name: "myStore", schema: type<{ myField: string }>() }).up
 - If the final schema after updates is not backwards-compatible, we can require
   at compile-time that a backfill or transform function is provided
 
-{/\*
+{/*
 
 ## Lifting runtime errors to compile time
 
@@ -226,7 +227,7 @@ TODO
 ## LLM-assisted verification
 
 TODO
-\*/}
+*/}
 
 ## Git repo
 
