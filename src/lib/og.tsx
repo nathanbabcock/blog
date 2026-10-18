@@ -90,7 +90,7 @@ export async function generateOgImage(title: string, date?: string) {
         { name: "Lora", data: loraRegular, weight: 400, style: "normal" },
         { name: "Lora", data: loraBold, weight: 700, style: "normal" },
       ],
-    }
+    },
   )
 
   const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } })

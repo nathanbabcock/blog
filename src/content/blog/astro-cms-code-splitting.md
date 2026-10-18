@@ -35,8 +35,8 @@ This system can compose recursively, as well -- a CMS block may be populated wit
 
 Thus far everything we've described assumes that CMS blocks can be fully statically rendered (e.g. plain HTML with no JS) as needed. That is not always the case; sometimes a CMS block will want to bring its own client-side functionality (for example: an image carousel, a custom video player, an interactive diagram or calculator widget, or any component with interactivity).
 
-This is one of the primary use cases that Astro's island architecture was intended to support, and in some ways it follows naturally from the architecture we are already building towards: all components in the integration already use React and support a client-side render path for the purposes of CMS live preview, so enabling that same client-side hydration to run in production too takes almost no extra work. The only change required is for the CMS registry to become aware of which components need client hydration (even in production) -- this can be as simple as a boolean `requiresClientLoad` in the registry, alongside the component mapping. 
-  
+This is one of the primary use cases that Astro's island architecture was intended to support, and in some ways it follows naturally from the architecture we are already building towards: all components in the integration already use React and support a client-side render path for the purposes of CMS live preview, so enabling that same client-side hydration to run in production too takes almost no extra work. The only change required is for the CMS registry to become aware of which components need client hydration (even in production) -- this can be as simple as a boolean `requiresClientLoad` in the registry, alongside the component mapping.
+
 However, it introduces one extra wrinkle...
 
 ## Maintaining code splitting boundaries
@@ -47,16 +47,16 @@ Suppose that there a single CMS block that needs both of those capabilities: it 
 
 Interactivity means adding the `requiresClientLoad` flag on this content block. And nested dynamic blocks means that its render method will loop back through the full CMS component registry in order to delegate to the right component for each nested block.
 
-Unfortunately these two factors combine to mean that *at runtime*, e.g. in client-side Javascript shipped to the browser, the component must know how to render any (and every) block in the CMS registry. The end result is that the client-side JS bundle will contain the code for *every component* used in the entire system, even if it's not used on that page. That means third party dependencies, carousel libraries, fancy WebGPU shader code to render that neat interactive visual that's used on one single page on the whole site -- every page now pays the tax of downloading and parsing that Javascript.
+Unfortunately these two factors combine to mean that _at runtime_, e.g. in client-side Javascript shipped to the browser, the component must know how to render any (and every) block in the CMS registry. The end result is that the client-side JS bundle will contain the code for _every component_ used in the entire system, even if it's not used on that page. That means third party dependencies, carousel libraries, fancy WebGPU shader code to render that neat interactive visual that's used on one single page on the whole site -- every page now pays the tax of downloading and parsing that Javascript.
 
-It's easy to make this mistake because it's essentially how the live preview render path works. It's worth noting that live preview *does* pull in client code for the entire CMS block registry on every page, precisely *because* it has to be able to handle anything that the editor might throw at it during an editing session, and any block is fair game. Paying the price of all that extra client runtime and bundle size is not a problem on an internal editor-facing page.
+It's easy to make this mistake because it's essentially how the live preview render path works. It's worth noting that live preview _does_ pull in client code for the entire CMS block registry on every page, precisely _because_ it has to be able to handle anything that the editor might throw at it during an editing session, and any block is fair game. Paying the price of all that extra client runtime and bundle size is not a problem on an internal editor-facing page.
 
 ## Injecting static content into client islands
 
-The solution is a rule of thumb:  
-  
-**Never import the CMS registry in any client component**.  
-  
+The solution is a rule of thumb:
+
+**Never import the CMS registry in any client component**.
+
 Anything dynamic, where the registry is consulted to map a content block type to its UI compoent, **must** be done in server-side (Astro) code, not in React.
 
 The means, for components which need both static content and client interactivity, **the static chunks must be passed in as children**.

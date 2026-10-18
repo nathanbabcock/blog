@@ -42,7 +42,8 @@ body {
   flex-direction: column;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: var(--color-accent);
 }
 
@@ -67,7 +68,9 @@ main {
 }
 
 @keyframes fade-only {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 .fade-in {
@@ -86,14 +89,15 @@ a {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-color: var(--color-accent);
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
 }
 
 a:hover {
   color: var(--color-accent-hover);
   text-decoration-color: var(--color-accent-hover);
 }
-
 
 strong {
   color: var(--color-accent);

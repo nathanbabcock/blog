@@ -2,6 +2,7 @@ import { defineConfig, fontProviders } from "astro/config"
 import react from "@astrojs/react"
 import mdx from "@astrojs/mdx"
 import sitemap from "@astrojs/sitemap"
+import { unified } from "@astrojs/markdown-remark"
 import rehypeExternalLinks from "rehype-external-links"
 import rehypeSlug from "rehype-slug"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
@@ -17,17 +18,19 @@ export default defineConfig({
     shikiConfig: {
       theme: "vitesse-dark",
     },
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: "prepend",
-          properties: { class: "heading-link", ariaHidden: true, tabIndex: -1 },
-        },
+    processor: unified({
+      rehypePlugins: [
+        rehypeSlug,
+        [
+          rehypeAutolinkHeadings,
+          {
+            behavior: "prepend",
+            properties: { class: "heading-link", ariaHidden: true, tabIndex: -1 },
+          },
+        ],
+        [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
       ],
-      [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
-    ],
+    }),
   },
 
   fonts: [
@@ -47,7 +50,6 @@ export default defineConfig({
   adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
 
   experimental: {
-    rustCompiler: true,
     contentIntellisense: true,
   },
 })
