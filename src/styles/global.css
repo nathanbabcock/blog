@@ -99,10 +99,6 @@ a:hover {
   text-decoration-color: var(--color-accent-hover);
 }
 
-strong {
-  color: var(--color-accent);
-}
-
 .heading-link {
   color: var(--color-muted);
   text-decoration: none;

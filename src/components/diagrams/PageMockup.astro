@@ -1,0 +1,109 @@
+---
+/**
+ * The example page drawn as a browser window, for use inside a diagram's <svg>.
+ * Every diagram renders the same blocks in the same layout; only the islands change.
+ */
+type Island = "page" | "section" | "carousel"
+type Block = "hero" | "richText" | "section" | "heading" | "carousel"
+
+interface Props {
+  x: number
+  y?: number
+  url: string
+  title: string
+  notes?: string[]
+  /** Highlight the title in the accent color */
+  accent?: boolean
+  /** Client island boundaries; every block inside one is drawn hydrated */
+  islands?: Island[]
+  /** Blocks rendered statically by Astro and passed into their island as children */
+  slots?: Block[]
+}
+
+const { x, y = 0, url, title, notes = [], accent = false, islands = [], slots = [] } = Astro.props
+
+const width = 280
+const inner = width - 24
+const nested = width - 48
+const mid = x + width / 2
+
+const ancestors = {
+  hero: ["page"],
+  richText: ["page"],
+  section: ["page", "section"],
+  heading: ["page", "section"],
+  carousel: ["page", "section", "carousel"],
+} satisfies Record<Block, Island[]>
+
+const hydrated = (block: Block) => !slots.includes(block) && ancestors[block].some((a) => islands.includes(a))
+const box = (block: Block) => (hydrated(block) ? "box client" : "box")
+const ink = (block: Block) => (hydrated(block) ? "ink client" : "ink")
+
+const blockRects = {
+  hero: { x: x + 12, y: y + 36, width: inner, height: 40 },
+  richText: { x: x + 12, y: y + 86, width: inner, height: 52 },
+  heading: { x: x + 24, y: y + 180, width: nested, height: 30 },
+  section: { x: x + 12, y: y + 148, width: inner, height: 170 },
+  carousel: { x: x + 24, y: y + 220, width: nested, height: 86 },
+}
+const boundary = (island: Island) => {
+  if (island === "page") return { x: x + 5, y: y + 29, width: width - 10, height: 296 }
+  return outset(blockRects[island], 5)
+}
+const outset = (r: { x: number; y: number; width: number; height: number }, d: number) => ({
+  x: r.x - d,
+  y: r.y - d,
+  width: r.width + d * 2,
+  height: r.height + d * 2,
+})
+---
+
+<rect class="box" x={x} y={y} width={width} height="330" rx="6"></rect>
+<line class="frame-rule" x1={x} y1={y + 24} x2={x + width} y2={y + 24}></line>
+<circle class="frame-dot" cx={x + 12} cy={y + 12} r="3"></circle>
+<circle class="frame-dot" cx={x + 22} cy={y + 12} r="3"></circle>
+<circle class="frame-dot" cx={x + 32} cy={y + 12} r="3"></circle>
+<text class="mono sub small" x={x + 44} y={y + 16}>{url}</text>
+
+<rect class={box("hero")} x={x + 12} y={y + 36} width={inner} height="40" rx="4"></rect>
+<text class="mono" x={x + 24} y={y + 61}>Hero</text>
+
+<rect class={box("richText")} x={x + 12} y={y + 86} width={inner} height="52" rx="4"></rect>
+<text class="mono" x={x + 24} y={y + 106}>RichText</text>
+<rect class={ink("richText")} x={x + 24} y={y + 116} width={nested * 0.8} height="4" rx="2"></rect>
+<rect class={ink("richText")} x={x + 24} y={y + 126} width={nested * 0.6} height="4" rx="2"></rect>
+
+<rect class={box("section")} {...blockRects.section} rx="4"></rect>
+<text class="mono" x={x + 24} y={y + 168}>Section</text>
+<rect class={box("heading")} x={x + 24} y={y + 180} width={nested} height="30" rx="4"></rect>
+<text class="mono" x={x + 36} y={y + 200}>Heading</text>
+<rect class={box("carousel")} {...blockRects.carousel} rx="4"></rect>
+<text class="mono" x={x + 36} y={y + 240}>Carousel</text>
+<rect class={ink("carousel")} x={x + 36} y={y + 248} width={nested - 24} height="34" rx="3"></rect>
+<circle class={ink("carousel")} cx={mid - 12} cy={y + 294} r="2.5"></circle>
+<circle class={ink("carousel")} cx={mid} cy={y + 294} r="2.5"></circle>
+<circle class={ink("carousel")} cx={mid + 12} cy={y + 294} r="2.5"></circle>
+
+{islands.map((island) => <rect class="boundary" {...boundary(island)} rx="6" />)}
+{
+  slots.map((block) => {
+    const r = blockRects[block]
+    return (
+      <>
+        <rect class="region" {...outset(r, 4)} rx="5" />
+        <text class="mono sub small" x={r.x + r.width - 10} y={r.y + 19} text-anchor="end">
+          {"<slot />"}
+        </text>
+      </>
+    )
+  })
+}
+
+<text class={accent ? "title accent" : "title"} x={x} y={y + 356}>{title}</text>
+{
+  notes.map((note, i) => (
+    <text class="sub" x={x} y={y + 376 + i * 18}>
+      {note}
+    </text>
+  ))
+}

@@ -1,0 +1,156 @@
+---
+interface Props {
+  caption?: string
+}
+
+const { caption } = Astro.props
+---
+
+<figure class="diagram">
+  <div class="scroll">
+    <slot />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .diagram {
+    --diagram-border: #3d352e;
+    --diagram-accent-fill: rgba(196, 154, 108, 0.12);
+    --diagram-accent-strong: rgba(196, 154, 108, 0.32);
+
+    margin: var(--spacing-lg) 0;
+  }
+
+  .scroll {
+    background: var(--color-surface);
+    border-radius: 6px;
+    padding: var(--spacing-md);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-muted) transparent;
+  }
+
+  .scroll :global(svg) {
+    display: block;
+    width: 100%;
+    min-width: 600px;
+    height: auto;
+    overflow: visible;
+  }
+
+  figcaption {
+    margin-top: var(--spacing-sm);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  /* Shared SVG vocabulary */
+  .diagram :global(text) {
+    fill: var(--color-text);
+    font-family: var(--font-lora), serif;
+    font-size: 16px;
+  }
+
+  .diagram :global(.title) {
+    font-weight: 700;
+  }
+
+  .diagram :global(.sub) {
+    fill: var(--color-muted);
+    font-size: 13.5px;
+  }
+
+  .diagram :global(.mono) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    white-space: pre;
+  }
+
+  .diagram :global(.accent) {
+    fill: var(--color-accent);
+  }
+
+  .diagram :global(.box) {
+    fill: var(--color-bg);
+    stroke: var(--diagram-border);
+    stroke-width: 1;
+  }
+
+  .diagram :global(.box.client) {
+    fill: var(--diagram-accent-fill);
+    stroke: var(--color-accent);
+  }
+
+  .diagram :global(.boundary) {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 1.25;
+    stroke-dasharray: 6 4;
+  }
+
+  .diagram :global(.region) {
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+  }
+
+  .diagram :global(.edge) {
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 1.25;
+  }
+
+  .diagram :global(.arrowhead) {
+    fill: var(--color-muted);
+  }
+
+  /* Faux content inside page mockups */
+  .diagram :global(.ink) {
+    fill: var(--color-muted);
+    opacity: 0.35;
+  }
+
+  .diagram :global(.ink.client) {
+    fill: var(--color-accent);
+    opacity: 0.45;
+  }
+
+  .diagram :global(.frame-rule) {
+    stroke: var(--diagram-border);
+  }
+
+  .diagram :global(.frame-dot) {
+    fill: var(--diagram-border);
+  }
+
+  .diagram :global(.small) {
+    font-size: 11px;
+  }
+
+  /* JSON snippets: keys in text color, strings in accent, punctuation muted */
+  .diagram :global(.json .mono) {
+    font-size: 12px;
+  }
+
+  .diagram :global(.json .s) {
+    fill: var(--color-accent);
+  }
+
+  .diagram :global(.json .p) {
+    fill: var(--color-muted);
+  }
+
+  .diagram :global(.bar-used) {
+    fill: var(--diagram-accent-strong);
+    stroke: var(--color-accent);
+  }
+
+  .diagram :global(.bar-waste) {
+    stroke: var(--color-muted);
+    stroke-dasharray: 3 3;
+  }
+</style>

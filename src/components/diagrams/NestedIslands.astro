@@ -1,0 +1,29 @@
+---
+import Diagram from "../Diagram.astro"
+import PageMockup from "./PageMockup.astro"
+---
+
+<Diagram caption="Server within client within server: Section hydrates, but its nested blocks arrive as static HTML through a slot.">
+  <svg
+    viewBox="0 0 720 416"
+    role="img"
+    aria-label="The same page side by side. In production the section block is a client island, but the heading nested inside it is rendered statically by Astro and passed in through a slot, so it stays static HTML. In live preview the whole page is still one island with every block hydrated."
+  >
+    <PageMockup
+      x={60}
+      url="example.com"
+      title="Production"
+      notes={["Section is a client island", "Heading slotted in as static HTML"]}
+      islands={["section"]}
+      slots={["heading"]}
+    />
+    <PageMockup
+      x={380}
+      url="cms editor · preview"
+      title="Live preview"
+      notes={["one island, all hydrated", "content via postMessage"]}
+      accent
+      islands={["page"]}
+    />
+  </svg>
+</Diagram>

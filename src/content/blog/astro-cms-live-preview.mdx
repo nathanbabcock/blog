@@ -1,9 +1,14 @@
 ---
-title: "Building a CMS live preview with nested Astro islands"
+title: "Recursive islands: Building a CMS live preview in Astro"
 description: "Rendering the same CMS content blocks statically in production and as hydrated islands in live preview, using Astro islands and a shared component registry."
 date: 2026-10-17
 draft: true
 ---
+
+import RenderPaths from "../../components/diagrams/RenderPaths.astro"
+import InteractiveBlocks from "../../components/diagrams/InteractiveBlocks.astro"
+import RegistryLeak from "../../components/diagrams/RegistryLeak.astro"
+import NestedIslands from "../../components/diagrams/NestedIslands.astro"
 
 This story is about satisfying two opposing design goals at the same time:
 
@@ -22,7 +27,9 @@ The best way to ensure that the two render paths are consistent is to ensure the
 
 That means there should be a reused layer of pure UI inside both -- CMS content blocks like image + text layouts, headings, rich text paragraphs, etc. The tricky part is connecting this UI layer to the two different render paths -- static and server-rendered in production, dynamic and client-rendered in live preview.
 
-Astro is the framework that allows us to render the same tree of content in two different modes. We can define the content blocks in React in both render paths, but in production, we render them statically (meaning no JS shipped to the client), while in live preview they can be [client islands](todo-link-to-astro-client-islands), with their props fed by the CMS live preview SDK (for example, passed in via `window.postMessage` calls if the preview is running in an `iframe` inside the CMS's editor).
+Astro is the framework that allows us to render the same tree of content in two different modes. We can define the content blocks in React in both render paths, but in production, we render them statically (meaning no JS shipped to the client), while in live preview they can be [client islands](https://docs.astro.build/en/concepts/islands/#client-islands), with their props fed by the CMS live preview SDK (for example, passed in via `window.postMessage` calls if the preview is running in an `iframe` inside the CMS's editor).
+
+<RenderPaths />
 
 ## Supporting dynamic CMS blocks
 
@@ -38,6 +45,8 @@ Thus far everything we've described assumes that CMS blocks can be fully statica
 
 This is one of the primary use cases that Astro's island architecture was intended to support, and in some ways it follows naturally from the architecture we are already building towards: all components in the integration already use React and support a client-side render path for the purposes of CMS live preview, so enabling that same client-side hydration to run in production too takes almost no extra work. The only change required is for the CMS registry to become aware of which components need client hydration (even in production) -- this can be as simple as a boolean `requiresClientLoad` in the registry, alongside the component mapping.
 
+<InteractiveBlocks />
+
 However, it introduces one extra wrinkle...
 
 ## Maintaining code splitting boundaries
@@ -49,6 +58,8 @@ Suppose that there a single CMS block that needs both of those capabilities: it 
 Interactivity means adding the `requiresClientLoad` flag on this content block. And nested dynamic blocks means that its render method will loop back through the full CMS component registry in order to delegate to the right component for each nested block.
 
 Unfortunately these two factors combine to mean that _at runtime_, e.g. in client-side Javascript shipped to the browser, the component must know how to render any (and every) block in the CMS registry. The end result is that the client-side JS bundle will contain the code for _every component_ used in the entire system, even if it's not used on that page. That means third party dependencies, carousel libraries, fancy WebGPU shader code to render that neat interactive visual that's used on one single page on the whole site -- every page now pays the tax of downloading and parsing that Javascript.
+
+<RegistryLeak />
 
 It's easy to make this mistake because it's essentially how the live preview render path works. It's worth noting that live preview _does_ pull in client code for the entire CMS block registry on every page, precisely _because_ it has to be able to handle anything that the editor might throw at it during an editing session, and any block is fair game. Paying the price of all that extra client runtime and bundle size is not a problem on an internal editor-facing page.
 
@@ -64,7 +75,9 @@ The means, for components which need both static content and client interactivit
 
 What we're describing here is a second level of island nesting: the top-level page is statically rendered, dotted with client-rendered islands of interactivity -- and then some of these islands themselves have a smaller chunk of static content injected inside of them: a server island within a client island.
 
-Astro's tool for this is [slots](todo-link). It interops with React by statically rendering all the content inside the slot before passing it in; React then renders it like a chunk of static HTML.
+<NestedIslands />
+
+Astro's tool for this is [slots](https://docs.astro.build/en/guides/framework-components/#passing-children-to-framework-components). It interops with React by statically rendering all the content inside the slot before passing it in; React then renders it like a chunk of static HTML.
 
 The general principle is to push client islands as far down the tree as possible towards leaf nodes; the code-splitting problems arised from having a too-broad client island boundary which captured entire branches of descendants underneath and turned them client-rendered also, even if they didn't need to be. Instead, that same branch should render whatever static children it can in advance, and then pass them in to the client-rendered components.
 

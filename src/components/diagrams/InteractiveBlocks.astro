@@ -1,0 +1,28 @@
+---
+import Diagram from "../Diagram.astro"
+import PageMockup from "./PageMockup.astro"
+---
+
+<Diagram caption="Blocks flagged requiresClientLoad hydrate in production too, as their own small islands.">
+  <svg
+    viewBox="0 0 720 416"
+    role="img"
+    aria-label="The same page side by side. In production the page is static HTML except the carousel, which is its own client island. In live preview the whole page is still one island with every block hydrated."
+  >
+    <PageMockup
+      x={60}
+      url="example.com"
+      title="Production"
+      notes={["static HTML, plus one island", "only Carousel ships JS"]}
+      islands={["carousel"]}
+    />
+    <PageMockup
+      x={380}
+      url="cms editor · preview"
+      title="Live preview"
+      notes={["one island, all hydrated", "content via postMessage"]}
+      accent
+      islands={["page"]}
+    />
+  </svg>
+</Diagram>
