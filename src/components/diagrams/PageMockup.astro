@@ -12,6 +12,8 @@ interface Props {
   url: string
   title?: string
   notes?: string[]
+  /** Put the title above the page like other boxes, instead of above the notes below it */
+  titleAbove?: boolean
   /** Highlight the title in the accent color */
   accent?: boolean
   /** Client island boundaries; every block inside one is drawn hydrated */
@@ -20,7 +22,7 @@ interface Props {
   slots?: Block[]
 }
 
-const { x, y = 0, url, title, notes = [], accent = false, islands = [], slots = [] } = Astro.props
+const { x, y = 0, url, title, notes = [], accent = false, titleAbove = false, islands = [], slots = [] } = Astro.props
 
 const width = 280
 const inner = width - 24
@@ -114,7 +116,7 @@ const outset = (r: { x: number; y: number; width: number; height: number }, d: n
 
 {
   title && (
-    <text class={accent ? "title accent" : "title"} x={x} y={y + 356}>
+    <text class={accent ? "title accent" : "title"} x={x} y={titleAbove ? y - 12 : y + 356}>
       {title}
     </text>
   )

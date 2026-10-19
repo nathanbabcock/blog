@@ -1,7 +1,8 @@
 ---
 /**
  * The example page's CMS content as JSON, for use inside a diagram's <svg>.
- * Line k's baseline sits at y + 54 + 16k, for diagrams that connect to individual lines.
+ * Line k's baseline sits at y + 28 + 16k, for diagrams that connect to individual lines.
+ * Like every labelled box in these diagrams, the bold label sits just above it (y - 12).
  */
 interface Props {
   x: number
@@ -11,11 +12,11 @@ interface Props {
 
 const { x, y = 0, width = 260 } = Astro.props
 const tx = x + 16
-const line = (k: number) => y + 54 + k * 16
+const line = (k: number) => y + 28 + k * 16
 ---
 
-<rect class="box" x={x} y={y} width={width} height="244" rx="6"></rect>
-<text class="title" x={tx} y={y + 26}>Raw CMS content JSON</text>
+<rect class="box" x={x} y={y} width={width} height="220" rx="6"></rect>
+<text class="title" x={x} y={y - 12}>Raw CMS content JSON</text>
 <g class="json">
   <text class="mono" x={tx} y={line(0)}><tspan class="p">{"{"}</tspan></text>
   <text class="mono" x={tx} y={line(1)}>  "type": <tspan class="s">"page"</tspan><tspan class="p">,</tspan></text>

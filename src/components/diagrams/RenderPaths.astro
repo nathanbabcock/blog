@@ -5,14 +5,14 @@ import PageMockup from "./PageMockup.astro"
 
 const chips = ["Hero", "RichText", "Section", "Heading", "Carousel"]
 const chipWidth = (name: string) => name.length * 7.8 + 18
-const chipX = chips.map((_, i) => 156 + chips.slice(0, i).reduce((x, c) => x + chipWidth(c) + 8, 0))
+const chipX = chips.map((_, i) => 160 + chips.slice(0, i).reduce((x, c) => x + chipWidth(c) + 8, 0))
 
-const pageY = 412
+const pageY = 416
 ---
 
 <Diagram caption="One library of blocks, rendered into the same page twice: static in production, hydrated in live preview.">
   <svg
-    viewBox="0 0 720 822"
+    viewBox="0 -11 720 841"
     role="img"
     aria-label="CMS content JSON feeds a library of shared React blocks, which renders two pages side by side with the same blocks in the same layout. In production the page is static HTML. In live preview the whole page is wrapped in one client island and every block is hydrated."
   >
@@ -24,18 +24,19 @@ const pageY = 412
     </defs>
 
     <!-- CMS content -->
-    <JsonSnippet x={230} />
+    <JsonSnippet x={230} y={28} />
 
-    <path class="edge" d="M360,245 L360,269" marker-end="url(#rp-arrow)"></path>
+    <!-- Off-center so it clears the library label; lines up with the live preview fork below -->
+    <path class="edge" d="M420,249 L420,293" marker-end="url(#rp-arrow)"></path>
 
     <!-- Library -->
-    <rect class="box" x="140" y="278" width="440" height="78" rx="6"></rect>
-    <text class="title" x="156" y="304">Library of React components</text>
+    <text class="title" x="140" y="290">Library of React components</text>
+    <rect class="box" x="140" y="302" width="440" height="58" rx="6"></rect>
     {
       chips.map((name, i) => (
         <>
-          <rect class="box" x={chipX[i]} y="318" width={chipWidth(name)} height="24" rx="4" />
-          <text class="mono" x={chipX[i] + 9} y="334">
+          <rect class="box" x={chipX[i]} y="319" width={chipWidth(name)} height="24" rx="4" />
+          <text class="mono" x={chipX[i] + 9} y="335">
             {name}
           </text>
         </>
@@ -43,8 +44,8 @@ const pageY = 412
     }
 
     <!-- Fork: curves settle into a straight vertical run before each arrowhead -->
-    <path class="edge" d="M300,357 C300,380 200,374 200,392 L200,403" marker-end="url(#rp-arrow)"></path>
-    <path class="edge" d="M420,357 C420,380 520,374 520,392 L520,403" marker-end="url(#rp-arrow)"></path>
+    <path class="edge" d="M300,361 C300,384 200,378 200,396 L200,407" marker-end="url(#rp-arrow)"></path>
+    <path class="edge" d="M420,361 C420,384 520,378 520,396 L520,407" marker-end="url(#rp-arrow)"></path>
 
     <!-- Pages -->
     <PageMockup

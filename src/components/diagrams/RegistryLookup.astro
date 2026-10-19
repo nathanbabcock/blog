@@ -3,34 +3,35 @@ import Diagram from "../Diagram.astro"
 import JsonSnippet from "./JsonSnippet.astro"
 import PageMockup from "./PageMockup.astro"
 
-const jsonY = 16
+const top = 28
+const jsonY = top
 const pageX = 440
 
 // Each block type: its JSON line, and where its label sits in the page mockup
 const lookups = [
-  { type: "hero", line: 3, pageY: 56, blockX: pageX + 12 },
-  { type: "richText", line: 4, pageY: 101, blockX: pageX + 12 },
-  { type: "section", line: 5, pageY: 163, blockX: pageX + 12 },
-  { type: "heading", line: 7, pageY: 195, blockX: pageX + 24 },
-  { type: "carousel", line: 8, pageY: 235, blockX: pageX + 24 },
+  { type: "hero", line: 3, pageY: top + 56, blockX: pageX + 12 },
+  { type: "richText", line: 4, pageY: top + 101, blockX: pageX + 12 },
+  { type: "section", line: 5, pageY: top + 163, blockX: pageX + 12 },
+  { type: "heading", line: 7, pageY: top + 195, blockX: pageX + 24 },
+  { type: "carousel", line: 8, pageY: top + 235, blockX: pageX + 24 },
 ]
-const jsonLineY = (k: number) => jsonY + 54 + k * 16 - 4
+const jsonLineY = (k: number) => jsonY + 28 + k * 16 - 4
 ---
 
 <Diagram caption="Every block type, top-level or nested, is resolved through the same registry.">
   <svg
-    viewBox="0 0 720 366"
+    viewBox="0 -11 720 385"
     role="img"
     aria-label="Each block type in the CMS content JSON is looked up in the registry, which maps it to a component on the rendered page. The heading and carousel nested inside the section go through the same registry and land inside the Section block."
   >
     <JsonSnippet x={0} y={jsonY} width={240} />
 
     <!-- Drawn first so the connectors sit on top of the page -->
-    <PageMockup x={pageX} url="example.com" title="Rendered page" />
+    <PageMockup x={pageX} y={top} url="example.com" title="Rendered page" titleAbove />
 
     <!-- Registry: one row per block type, aligned with the block it renders -->
-    <text class="mono" x="345" y="26" text-anchor="middle">registry</text>
-    <rect class="box" x="290" y="36" width="110" height="282" rx="6"></rect>
+    <text class="title" x="290" y={top - 12}>Registry</text>
+    <rect class="box" x="290" y={top} width="110" height="330" rx="6"></rect>
     {
       lookups.map(({ type, line, pageY, blockX }) => {
         const ly = jsonLineY(line)
