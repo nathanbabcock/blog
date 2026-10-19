@@ -79,7 +79,7 @@ Anything dynamic, where the registry is consulted to map a content block type to
 
 The means, for components which need both static content and client interactivity, **the static chunks must be passed in as children**.
 
-What we're describing here is a second level of island nesting: the top-level page is statically rendered, dotted with client-rendered islands of interactivity -- and then some of these islands themselves have a smaller chunk of static content injected inside of them: a server island within a client island.
+What we're describing here is a second level of island nesting: the top-level page is statically rendered, dotted with client-rendered islands of interactivity -- and then some of these islands themselves have a smaller chunk of static content injected inside of them: static content within a client island.
 
 <NestedIslands />
 
