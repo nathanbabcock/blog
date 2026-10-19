@@ -152,6 +152,29 @@ a:hover {
   margin-bottom: 0.3em;
 }
 
+/* Task lists: swap the native checkbox for an emoji */
+.prose .contains-task-list {
+  --task-gap: 0.35em;
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose .task-list-item input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prose .task-list-item::before {
+  /* this may need some work the first time it appears */
+  content: "⬜";
+  margin-right: var(--task-gap);
+}
+
+.prose .task-list-item:has(> input:checked)::before {
+  content: "✅";
+}
+
 .prose blockquote {
   border-left: 3px solid var(--color-muted);
   padding-left: var(--spacing-md);
