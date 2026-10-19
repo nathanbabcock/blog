@@ -11,6 +11,19 @@ import RegistryLookup from "../../components/diagrams/RegistryLookup.astro"
 import InteractiveBlocks from "../../components/diagrams/InteractiveBlocks.astro"
 import RegistryLeak from "../../components/diagrams/RegistryLeak.astro"
 import NestedIslands from "../../components/diagrams/NestedIslands.astro"
+import RecursiveIslands from "../../components/diagrams/RecursiveIslands.astro"
+import Photo from "../../components/Photo.astro"
+import taal from "../../assets/images/taal.webp"
+
+<Photo
+  src={taal}
+  loading="eager"
+  alt="Satellite view of Lake Taal in the Philippines, with Volcano Island in the middle of the lake and a small crater lake at the island's center"
+>
+  An island in a lake on an island in a lake on an island. [Lake Taal,
+  Philippines](https://www.google.com/maps/place/13%C2%B059'05.0%22N+121%C2%B000'57.0%22E/@13.9914511,120.9797288,27881m/data=!3m1!1e3!4m4!3m3!8m2!3d13.98472!4d121.01583).
+  Image: NASA Earth Observatory
+</Photo>
 
 This story is about satisfying two opposing design goals at the same time:
 
@@ -97,4 +110,17 @@ This solution composes nicely and it checks a lot of boxes for a CMS integration
 - [x] Dynamic embedded CMS blocks
 - [x] Effective code-splitting in production so that only JS used on the page is loaded
 
-It is only possible due to Astro's island architecture, and it is one of the rare use cases for three-level island nesting: server within client within server.
+It is only possible due to Astro's island architecture, and it is one of the
+rare use cases for three-level island nesting: server within client within
+server. And though that's sufficient for nearly any practical purpose, it doesn't _have to_ stop there…
+
+<RecursiveIslands />
+
+## Further reading
+
+- [Recursive islands and lakes](https://en.wikipedia.org/wiki/Recursive_islands_and_lakes) on Wikipedia
+- [Islands architecture](https://docs.astro.build/en/concepts/islands/) in the Astro docs
+- [Passing children to framework components](https://docs.astro.build/en/guides/framework-components/#passing-children-to-framework-components) in the Astro docs
+- [Nesting framework components](https://docs.astro.build/en/guides/framework-components/#nesting-framework-components) in the Astro docs
+- [Server islands](https://docs.astro.build/en/guides/server-islands/) in the Astro docs, the other kind of island
+- [Islands Architecture](https://jasonformat.com/islands-architecture/), Jason Miller's 2020 post that popularized the pattern

@@ -1,0 +1,52 @@
+---
+import Diagram from "../Diagram.astro"
+
+const pageH = 400
+
+// Each layer sits 40 units inside the one before it, alternating static and client
+const layers = [
+  { name: "Carousel", role: "client island", client: true },
+  { name: "RichText", role: "static, passed in through a slot", client: false },
+  { name: "VideoPlayer", role: "client island", client: true },
+].map((layer, i) => {
+  const x = 40 * (i + 1)
+  const y = 64 + 40 * i
+  const bottom = pageH - 32 - 40 * i
+  return { ...layer, x, y, width: 720 - x * 2, height: bottom - y }
+})
+---
+
+<Diagram caption="An island in a lake on an island: static and client layers alternate as deep as the content goes.">
+  <svg
+    viewBox={`0 -16 720 ${pageH + 32}`}
+    role="img"
+    aria-label="Nested layers on one page. The static page contains a Carousel client island. Inside the carousel is RichText content, rendered statically and passed in through a slot. Inside that rich text is a VideoPlayer, its own client island."
+  >
+    <!-- The page itself: static HTML -->
+    <rect class="box" x="0" y="0" width="720" height={pageH} rx="6"></rect>
+    <line class="frame-rule" x1="0" y1="24" x2="720" y2="24"></line>
+    <circle class="frame-dot" cx="12" cy="12" r="3"></circle>
+    <circle class="frame-dot" cx="22" cy="12" r="3"></circle>
+    <circle class="frame-dot" cx="32" cy="12" r="3"></circle>
+    <text class="mono sub small" x="44" y="16">example.com</text>
+    <text class="sub" x="16" y="50">page · static HTML</text>
+
+    {
+      layers.map(({ name, role, client, x, y, width, height }) => (
+        <>
+          <rect class={client ? "box client" : "box slot"} x={x} y={y} width={width} height={height} rx="6" />
+          {client && <rect class="boundary" x={x - 5} y={y - 5} width={width + 10} height={height + 10} rx="8" />}
+          <text class="mono" x={x + 16} y={y + 26}>
+            {name}
+          </text>
+          <text class="sub" x={x + 26 + name.length * 7.8} y={y + 26}>
+            {role}
+          </text>
+        </>
+      ))
+    }
+
+    <!-- A play button, so the innermost island reads as a video -->
+    <path class="ink client" d="M350,212 L350,244 L378,228 Z"></path>
+  </svg>
+</Diagram>

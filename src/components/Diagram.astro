@@ -44,6 +44,7 @@ const { caption } = Astro.props
     margin-top: var(--spacing-sm);
     font-size: 0.8rem;
     font-style: italic;
+    line-height: 1.35;
     color: var(--color-muted);
     text-align: center;
   }
@@ -83,6 +84,13 @@ const { caption } = Astro.props
   .diagram :global(.box.client) {
     fill: var(--diagram-accent-fill);
     stroke: var(--color-accent);
+  }
+
+  /* Static content slotted into an island: opaque, so it reads as a hole in the island's color */
+  .diagram :global(.box.slot) {
+    fill: var(--color-bg);
+    stroke: var(--color-muted);
+    stroke-dasharray: 2 4;
   }
 
   /* Code that ships but shouldn't */

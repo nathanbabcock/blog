@@ -99,6 +99,17 @@ a:hover {
   text-decoration-color: var(--color-accent-hover);
 }
 
+/* Links in captions keep the caption's color; the underline alone marks them */
+figcaption a,
+figcaption a:hover {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+figcaption a:hover {
+  color: var(--color-text);
+}
+
 .heading-link {
   color: var(--color-muted);
   text-decoration: none;
