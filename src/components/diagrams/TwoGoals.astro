@@ -1,0 +1,36 @@
+---
+import Diagram from "../Diagram.astro"
+import PageMockup from "./PageMockup.astro"
+---
+
+<Diagram caption="Static for visitors, dynamic for editors, and identical to the eye.">
+  <svg
+    viewBox="0 -44 720 440"
+    role="img"
+    aria-label="The same page twice. In production it is statically rendered for fast loads and good SEO. In live preview it is dynamic, one hydrated island that updates as editors type. A bracket joins the two: they must look identical."
+  >
+    <!-- The tension: two render paths, one appearance -->
+    <path class="edge" d="M200,-6 L200,-22 L290,-22"></path>
+    <path class="edge" d="M430,-22 L520,-22 L520,-6"></path>
+    <text class="sub" x="360" y="-18" text-anchor="middle">must look identical</text>
+
+    <PageMockup
+      x={60}
+      url="example.com"
+      title="Production"
+      notes={["statically rendered, fast loads, good SEO"]}
+      labels={false}
+    />
+    <PageMockup
+      x={380}
+      url="cms editor · preview"
+      title="Live preview"
+      notes={["dynamic, updates as editors type"]}
+      labels={false}
+      accent
+      islands={["page"]}
+    />
+
+    <text class="sub" x="360" y="172" text-anchor="middle" style="font-size: 22px">=</text>
+  </svg>
+</Diagram>

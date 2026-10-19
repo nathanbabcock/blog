@@ -12,7 +12,7 @@ const pageY = 416
 
 <Diagram caption="One library of blocks, rendered into the same page twice: static in production, hydrated in live preview.">
   <svg
-    viewBox="0 -11 720 841"
+    viewBox="0 -11 720 823"
     role="img"
     aria-label="CMS content JSON feeds a library of shared React blocks, which renders two pages side by side with the same blocks in the same layout. In production the page is static HTML. In live preview the whole page is wrapped in one client island and every block is hydrated."
   >
@@ -53,14 +53,14 @@ const pageY = 416
       y={pageY}
       url="example.com"
       title="Production"
-      notes={["static HTML, no JS", "content fetched at build"]}
+      notes={["static HTML, no JS, fetched at build"]}
     />
     <PageMockup
       x={380}
       y={pageY}
       url="cms editor · preview"
       title="Live preview"
-      notes={["one island, all hydrated", "content via postMessage"]}
+      notes={["one hydrated island, fed by postMessage"]}
       accent
       islands={["page"]}
     />

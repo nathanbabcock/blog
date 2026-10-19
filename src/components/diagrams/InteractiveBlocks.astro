@@ -5,7 +5,7 @@ import PageMockup from "./PageMockup.astro"
 
 <Diagram caption="Interactive blocks hydrate in production too, each as its own small island.">
   <svg
-    viewBox="0 -16 720 430"
+    viewBox="0 -16 720 412"
     role="img"
     aria-label="The same page side by side. In production the page is static HTML except the carousel, which is its own client island. In live preview the whole page is still one island with every block hydrated."
   >
@@ -13,14 +13,14 @@ import PageMockup from "./PageMockup.astro"
       x={60}
       url="example.com"
       title="Production"
-      notes={["static HTML, plus one island", "only Carousel ships JS"]}
+      notes={["static HTML, only Carousel ships JS"]}
       islands={["carousel"]}
     />
     <PageMockup
       x={380}
       url="cms editor · preview"
       title="Live preview"
-      notes={["one island, all hydrated", "content via postMessage"]}
+      notes={["one hydrated island, fed by postMessage"]}
       accent
       islands={["page"]}
     />

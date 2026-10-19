@@ -20,9 +20,11 @@ interface Props {
   islands?: Island[]
   /** Blocks rendered statically by Astro and passed into their island as children */
   slots?: Block[]
+  /** Name each block; turn off to draw an anonymous wireframe with placeholder bars instead */
+  labels?: boolean
 }
 
-const { x, y = 0, url, title, notes = [], accent = false, titleAbove = false, islands = [], slots = [] } = Astro.props
+const { x, y = 0, url, title, notes = [], accent = false, titleAbove = false, islands = [], slots = [], labels = true } = Astro.props
 
 const width = 280
 const inner = width - 24
@@ -41,6 +43,15 @@ const ancestors = {
 const hydrated = (block: Block) => !slots.includes(block) && ancestors[block].some((a) => islands.includes(a))
 const box = (block: Block) => (hydrated(block) ? "box client" : "box")
 const ink = (block: Block) => (hydrated(block) ? "ink client" : "ink")
+
+// Where each block's name sits (text baseline), and the placeholder bar width used without labels
+const blockLabels = [
+  { block: "hero", name: "Hero", x: x + 24, y: y + 61, bar: 110 },
+  { block: "richText", name: "RichText", x: x + 24, y: y + 106, bar: 70 },
+  { block: "section", name: "Section", x: x + 24, y: y + 168, bar: 60 },
+  { block: "heading", name: "Heading", x: x + 36, y: y + 200, bar: 90 },
+  { block: "carousel", name: "Carousel", x: x + 36, y: y + 240, bar: 60 },
+] satisfies { block: Block; name: string; x: number; y: number; bar: number }[]
 
 const blockRects = {
   hero: { x: x + 12, y: y + 36, width: inner, height: 40 },
@@ -70,19 +81,14 @@ const outset = (r: { x: number; y: number; width: number; height: number }, d: n
 <text class="mono sub small" x={x + 44} y={y + 16}>{url}</text>
 
 <rect class={box("hero")} x={x + 12} y={y + 36} width={inner} height="40" rx="4"></rect>
-<text class="mono" x={x + 24} y={y + 61}>Hero</text>
 
 <rect class={box("richText")} x={x + 12} y={y + 86} width={inner} height="52" rx="4"></rect>
-<text class="mono" x={x + 24} y={y + 106}>RichText</text>
 <rect class={ink("richText")} x={x + 24} y={y + 116} width={nested * 0.8} height="4" rx="2"></rect>
 <rect class={ink("richText")} x={x + 24} y={y + 126} width={nested * 0.6} height="4" rx="2"></rect>
 
 <rect class={box("section")} {...blockRects.section} rx="4"></rect>
-<text class="mono" x={x + 24} y={y + 168}>Section</text>
 <rect class={box("heading")} x={x + 24} y={y + 180} width={nested} height="30" rx="4"></rect>
-<text class="mono" x={x + 36} y={y + 200}>Heading</text>
 <rect class={box("carousel")} {...blockRects.carousel} rx="4"></rect>
-<text class="mono" x={x + 36} y={y + 240}>Carousel</text>
 {
   slots.includes("slide") ? (
     <>
@@ -98,6 +104,18 @@ const outset = (r: { x: number; y: number; width: number; height: number }, d: n
 <circle class={ink("carousel")} cx={mid - 12} cy={y + 294} r="2.5"></circle>
 <circle class={ink("carousel")} cx={mid} cy={y + 294} r="2.5"></circle>
 <circle class={ink("carousel")} cx={mid + 12} cy={y + 294} r="2.5"></circle>
+
+{
+  blockLabels.map(({ block, name, x: lx, y: ly, bar }) =>
+    labels ? (
+      <text class="mono" x={lx} y={ly}>
+        {name}
+      </text>
+    ) : (
+      <rect class={ink(block)} x={lx} y={ly - 9} width={bar} height="6" rx="3" />
+    ),
+  )
+}
 
 {islands.map((island) => <rect class="boundary" {...boundary(island)} rx="6" />)}
 {
