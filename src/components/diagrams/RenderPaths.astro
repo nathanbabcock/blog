@@ -1,5 +1,6 @@
 ---
 import Diagram from "../Diagram.astro"
+import JsonSnippet from "./JsonSnippet.astro"
 import PageMockup from "./PageMockup.astro"
 
 const chips = ["Hero", "RichText", "Section", "Heading", "Carousel"]
@@ -23,22 +24,7 @@ const pageY = 412
     </defs>
 
     <!-- CMS content -->
-    <rect class="box" x="230" y="0" width="260" height="244" rx="6"></rect>
-    <text class="title" x="246" y="26">Raw CMS content JSON</text>
-    <g class="json">
-      <text class="mono" x="246" y="54"><tspan class="p">{"{"}</tspan></text>
-      <text class="mono" x="246" y="70">  "type": <tspan class="s">"page"</tspan><tspan class="p">,</tspan></text>
-      <text class="mono" x="246" y="86">  "blocks": <tspan class="p">[</tspan></text>
-      <text class="mono" x="246" y="102"><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"hero"</tspan> <tspan class="p">{"},"}</tspan></text>
-      <text class="mono" x="246" y="118"><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"richText"</tspan> <tspan class="p">{"},"}</tspan></text>
-      <text class="mono" x="246" y="134"><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"section"</tspan><tspan class="p">,</tspan></text>
-      <text class="mono" x="246" y="150">      "blocks": <tspan class="p">[</tspan></text>
-      <text class="mono" x="246" y="166"><tspan class="p">        {"{"}</tspan> "type": <tspan class="s">"heading"</tspan> <tspan class="p">{"},"}</tspan></text>
-      <text class="mono" x="246" y="182"><tspan class="p">        {"{"}</tspan> "type": <tspan class="s">"carousel"</tspan> <tspan class="p">{"}"}</tspan></text>
-      <text class="mono" x="246" y="198"><tspan class="p">      ] {"}"}</tspan></text>
-      <text class="mono" x="246" y="214"><tspan class="p">  ]</tspan></text>
-      <text class="mono" x="246" y="230"><tspan class="p">{"}"}</tspan></text>
-    </g>
+    <JsonSnippet x={230} />
 
     <path class="edge" d="M360,245 L360,269" marker-end="url(#rp-arrow)"></path>
 

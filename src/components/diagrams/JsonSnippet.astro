@@ -1,0 +1,32 @@
+---
+/**
+ * The example page's CMS content as JSON, for use inside a diagram's <svg>.
+ * Line k's baseline sits at y + 54 + 16k, for diagrams that connect to individual lines.
+ */
+interface Props {
+  x: number
+  y?: number
+  width?: number
+}
+
+const { x, y = 0, width = 260 } = Astro.props
+const tx = x + 16
+const line = (k: number) => y + 54 + k * 16
+---
+
+<rect class="box" x={x} y={y} width={width} height="244" rx="6"></rect>
+<text class="title" x={tx} y={y + 26}>Raw CMS content JSON</text>
+<g class="json">
+  <text class="mono" x={tx} y={line(0)}><tspan class="p">{"{"}</tspan></text>
+  <text class="mono" x={tx} y={line(1)}>  "type": <tspan class="s">"page"</tspan><tspan class="p">,</tspan></text>
+  <text class="mono" x={tx} y={line(2)}>  "blocks": <tspan class="p">[</tspan></text>
+  <text class="mono" x={tx} y={line(3)}><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"hero"</tspan> <tspan class="p">{"},"}</tspan></text>
+  <text class="mono" x={tx} y={line(4)}><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"richText"</tspan> <tspan class="p">{"},"}</tspan></text>
+  <text class="mono" x={tx} y={line(5)}><tspan class="p">    {"{"}</tspan> "type": <tspan class="s">"section"</tspan><tspan class="p">,</tspan></text>
+  <text class="mono" x={tx} y={line(6)}>      "blocks": <tspan class="p">[</tspan></text>
+  <text class="mono" x={tx} y={line(7)}><tspan class="p">        {"{"}</tspan> "type": <tspan class="s">"heading"</tspan> <tspan class="p">{"},"}</tspan></text>
+  <text class="mono" x={tx} y={line(8)}><tspan class="p">        {"{"}</tspan> "type": <tspan class="s">"carousel"</tspan> <tspan class="p">{"}"}</tspan></text>
+  <text class="mono" x={tx} y={line(9)}><tspan class="p">      ] {"}"}</tspan></text>
+  <text class="mono" x={tx} y={line(10)}><tspan class="p">  ]</tspan></text>
+  <text class="mono" x={tx} y={line(11)}><tspan class="p">{"}"}</tspan></text>
+</g>

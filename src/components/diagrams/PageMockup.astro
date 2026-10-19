@@ -10,7 +10,7 @@ interface Props {
   x: number
   y?: number
   url: string
-  title: string
+  title?: string
   notes?: string[]
   /** Highlight the title in the accent color */
   accent?: boolean
@@ -112,7 +112,13 @@ const outset = (r: { x: number; y: number; width: number; height: number }, d: n
   })
 }
 
-<text class={accent ? "title accent" : "title"} x={x} y={y + 356}>{title}</text>
+{
+  title && (
+    <text class={accent ? "title accent" : "title"} x={x} y={y + 356}>
+      {title}
+    </text>
+  )
+}
 {
   notes.map((note, i) => (
     <text class="sub" x={x} y={y + 376 + i * 18}>

@@ -6,6 +6,7 @@ draft: true
 ---
 
 import RenderPaths from "../../components/diagrams/RenderPaths.astro"
+import RegistryLookup from "../../components/diagrams/RegistryLookup.astro"
 import InteractiveBlocks from "../../components/diagrams/InteractiveBlocks.astro"
 import RegistryLeak from "../../components/diagrams/RegistryLeak.astro"
 import NestedIslands from "../../components/diagrams/NestedIslands.astro"
@@ -38,6 +39,8 @@ Sometimes we won't know in advance exactly what CMS blocks a certain page will u
 While traversing that tree of nodes in either render path, the system needs to know what React component is used for each one. To answer that we create a **registry** of CMS blocks. Each render path consults this registry and renders the appriate component, according to whichever render method it uses (either static or dynamic).
 
 This system can compose recursively, as well -- a CMS block may be populated with additional dynamic blocks inside it, all of which can be resolved by consulting the CMS registry at any level of nesting.
+
+<RegistryLookup />
 
 ## Adding client-side interactivity to CMS blocks
 
