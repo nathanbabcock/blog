@@ -21,6 +21,10 @@ const { src, alt, loading = "lazy" } = Astro.props
 
 <style>
   figure {
+    --radius: 6px;
+    --ring-width: 1px;
+    --ring-gap: 8px;
+
     margin: var(--spacing-lg) 0;
   }
 
@@ -28,11 +32,15 @@ const { src, alt, loading = "lazy" } = Astro.props
     display: block;
   }
 
+  /* Accent ring with a gap, as border + padding so it sits flush with the text column.
+     Images are clipped to their content-box curve, so the photo keeps its own radius inside. */
   figure :global(img) {
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 6px;
+    padding: var(--ring-gap);
+    border: var(--ring-width) solid var(--color-accent);
+    border-radius: calc(var(--radius) + var(--ring-width) + var(--ring-gap));
   }
 
   /* Matches the diagram captions */
