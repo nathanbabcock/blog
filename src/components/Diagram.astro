@@ -17,7 +17,8 @@ const { caption } = Astro.props
   .diagram {
     --diagram-border: #3d352e;
     --diagram-accent-fill: rgba(196, 154, 108, 0.12);
-    --diagram-accent-strong: rgba(196, 154, 108, 0.32);
+    --diagram-bad: #c96a5c;
+    --diagram-bad-fill: rgba(201, 106, 92, 0.12);
 
     margin: var(--spacing-lg) 0;
   }
@@ -84,6 +85,26 @@ const { caption } = Astro.props
     stroke: var(--color-accent);
   }
 
+  /* Code that ships but shouldn't */
+  .diagram :global(.box.bad) {
+    fill: var(--diagram-bad-fill);
+    stroke: var(--diagram-bad);
+  }
+
+  .diagram :global(.warn) {
+    fill: var(--diagram-bad);
+    stroke: var(--diagram-bad);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .diagram :global(.warn-mark) {
+    fill: var(--color-bg);
+    font-family: var(--font-lora), serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
   .diagram :global(.boundary) {
     fill: none;
     stroke: var(--color-accent);
@@ -106,6 +127,15 @@ const { caption } = Astro.props
 
   .diagram :global(.arrowhead) {
     fill: var(--color-muted);
+  }
+
+  .diagram :global(.edge.accent) {
+    fill: none;
+    stroke: var(--color-accent);
+  }
+
+  .diagram :global(.arrowhead.accent) {
+    fill: var(--color-accent);
   }
 
   /* Faux content inside page mockups */
@@ -142,15 +172,5 @@ const { caption } = Astro.props
 
   .diagram :global(.json .p) {
     fill: var(--color-muted);
-  }
-
-  .diagram :global(.bar-used) {
-    fill: var(--diagram-accent-strong);
-    stroke: var(--color-accent);
-  }
-
-  .diagram :global(.bar-waste) {
-    stroke: var(--color-muted);
-    stroke-dasharray: 3 3;
   }
 </style>

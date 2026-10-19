@@ -1,94 +1,96 @@
 ---
 import Diagram from "../Diagram.astro"
 
-const used = ["Section", "Heading", "RichText", "Carousel"]
-const waste = ["Hero", "VideoPlayer", "ShaderCanvas", "Calculator", "MapEmbed"]
-const barY = (i: number) => 104 + i * 28
+const blocks = [
+  { name: "Carousel", needed: true },
+  { name: "RichText", needed: true },
+  { name: "Hero" },
+  { name: "Section" },
+  { name: "Heading" },
+  { name: "VideoPlayer", dep: "hls.js" },
+  { name: "ShaderCanvas", dep: "three" },
+  { name: "Calculator", dep: "mathjs" },
+  { name: "MapEmbed", dep: "leaflet" },
+]
+const rowY = (i: number) => 40 + i * 40
+const rowCy = (i: number) => rowY(i) + 15
+const stackTop = rowY(0)
+const stackBottom = rowY(blocks.length - 1) + 30
+const stackMid = (stackTop + stackBottom) / 2
 ---
 
-<Diagram caption="An interactive block that resolves its own children drags the entire registry into the client bundle.">
+<Diagram caption="Rich text loops back to the registry, pulling every block into the bundle.">
   <svg
-    viewBox="0 0 720 352"
+    viewBox="0 0 720 452"
     role="img"
-    aria-label="A page tree where the section block is a client island that imports the registry. Everything under it becomes client-rendered, and the page bundle contains every component in the registry, including several not used on the page."
+    aria-label="Module graph. The registry imports every CMS block. The Carousel client island imports RichText for its slide content, and RichText imports the registry to render embedded blocks, which closes a loop back through every block and its dependencies. Everything ends up in the client bundle, though the page only needs Carousel and RichText."
   >
     <defs>
-      <marker id="rl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <marker id="rl-arrow" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path class="arrowhead" d="M0,0 L10,5 L0,10 z"></path>
       </marker>
-      <pattern id="rl-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="6" stroke="#8a7e72" stroke-opacity="0.35" stroke-width="2"></line>
-      </pattern>
+      <marker id="rl-arrow-accent" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path class="arrowhead accent" d="M0,0 L10,5 L0,10 z"></path>
+      </marker>
     </defs>
 
-    <!-- Edges -->
-    <path class="edge" d="M265,44 L265,62 L70,62 L70,92"></path>
-    <path class="edge" d="M265,62 L190,62 L190,92"></path>
-    <path class="edge" d="M265,62 L400,62 L400,92"></path>
-    <path class="edge" d="M400,140 L400,170 L290,170 L290,200"></path>
-    <path class="edge" d="M400,170 L400,200"></path>
-    <path class="edge" d="M400,170 L510,170 L510,200"></path>
+    <rect class="boundary" x="0" y="0" width="720" height="410" rx="8"></rect>
+    <text class="sub accent" x="16" y="24">client bundle</text>
 
-    <!-- Server-rendered nodes -->
-    <rect class="box" x="215" y="8" width="100" height="36" rx="5"></rect>
-    <text x="265" y="31" text-anchor="middle">page</text>
-    <rect class="box" x="20" y="92" width="100" height="36" rx="5"></rect>
-    <text x="70" y="115" text-anchor="middle">hero</text>
-    <rect class="box" x="140" y="92" width="100" height="36" rx="5"></rect>
-    <text x="190" y="115" text-anchor="middle">richText</text>
+    <!-- Registry spans the whole stack, so every import is a straight line -->
+    <rect class="box bad" x="40" y={stackTop} width="160" height={stackBottom - stackTop} rx="5"></rect>
+    <text class="mono" x="120" y={stackMid - 4} text-anchor="middle">registry</text>
+    <text class="sub" x="120" y={stackMid + 16} text-anchor="middle">imports every block</text>
 
-    <!-- Client island: section and everything beneath it -->
-    <rect class="boundary" x="226" y="80" width="348" height="196" rx="8"></rect>
-    <rect class="box client" x="340" y="92" width="120" height="48" rx="5"></rect>
-    <text x="400" y="113" text-anchor="middle">section</text>
-    <text class="sub accent" x="400" y="130" text-anchor="middle">imports registry</text>
-
-    <rect class="box client" x="240" y="200" width="100" height="36" rx="5"></rect>
-    <text x="290" y="223" text-anchor="middle">heading</text>
-    <rect class="box client" x="350" y="200" width="100" height="36" rx="5"></rect>
-    <text x="400" y="223" text-anchor="middle">richText</text>
-    <rect class="box client" x="460" y="200" width="100" height="36" rx="5"></rect>
-    <text x="510" y="223" text-anchor="middle">carousel</text>
-
-    <text class="sub accent" x="240" y="264">client island: whole branch hydrates</text>
-
-    <path class="edge" d="M576,178 L594,178" marker-end="url(#rl-arrow)"></path>
-
-    <!-- Bundle -->
-    <text class="title" x="598" y="90">page bundle</text>
     {
-      used.map((name, i) => (
-        <>
-          <rect class="bar-used" x="598" y={barY(i)} width="122" height="22" rx="3" />
-          <text class="mono" x="606" y={barY(i) + 15}>
-            {name}
-          </text>
-        </>
-      ))
+      blocks.map(({ name, needed, dep }, i) => {
+        const y = rowY(i)
+        const cy = rowCy(i)
+        return (
+          <>
+            {name === "RichText" ? (
+              <path class="edge accent" d={`M289,${cy} L210,${cy}`} marker-end="url(#rl-arrow-accent)" />
+            ) : (
+              <path
+                class={name === "Carousel" ? "edge accent" : "edge"}
+                d={`M201,${cy} L280,${cy}`}
+                marker-end={name === "Carousel" ? "url(#rl-arrow-accent)" : "url(#rl-arrow)"}
+              />
+            )}
+            <rect class={needed ? "box client" : "box bad"} x="290" y={y} width="160" height="30" rx="4" />
+            <text class="mono" x="302" y={cy + 5}>
+              {name}
+            </text>
+            {dep && (
+              <>
+                <path class="edge" d={`M451,${cy} L521,${cy}`} marker-end="url(#rl-arrow)" />
+                <rect class="box bad" x="530" y={y} width="150" height="30" rx="4" />
+                <text class="mono sub" x="542" y={cy + 5}>
+                  {dep}
+                </text>
+              </>
+            )}
+          </>
+        )
+      })
     }
-    {
-      waste.map((name, i) => (
-        <>
-          <rect
-            class="bar-waste"
-            x="598"
-            y={barY(used.length + i)}
-            width="122"
-            height="22"
-            rx="3"
-            fill="url(#rl-hatch)"
-          />
-          <text class="mono sub" x="606" y={barY(used.length + i) + 15}>
-            {name}
-          </text>
-        </>
-      ))
-    }
+
+    <!-- Warning on the import that closes the loop -->
+    <g transform={`translate(245, ${rowCy(1)})`}>
+      <path class="warn" d="M0,-10 L10,7 L-10,7 Z"></path>
+      <text class="warn-mark" x="0" y="5" text-anchor="middle">!</text>
+    </g>
+
+    <!-- Carousel renders RichText for its slides -->
+    <path
+      class="edge accent"
+      d={`M451,${rowCy(0)} C482,${rowCy(0)} 482,${rowCy(1)} 468,${rowCy(1)} L460,${rowCy(1)}`}
+      marker-end="url(#rl-arrow-accent)"></path>
 
     <!-- Legend -->
-    <rect class="bar-used" x="240" y="300" width="14" height="14" rx="2"></rect>
-    <text class="sub" x="262" y="312">needed on this page</text>
-    <rect class="bar-waste" x="400" y="300" width="14" height="14" rx="2" fill="url(#rl-hatch)"></rect>
-    <text class="sub" x="422" y="312">shipped anyway</text>
+    <rect class="box client" x="16" y="428" width="14" height="14" rx="2"></rect>
+    <text class="sub" x="38" y="440">needed on this page</text>
+    <rect class="box bad" x="200" y="428" width="14" height="14" rx="2"></rect>
+    <text class="sub" x="222" y="440">unused but pulled in through the registry</text>
   </svg>
 </Diagram>
