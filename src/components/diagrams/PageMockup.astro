@@ -4,7 +4,7 @@
  * Every diagram renders the same blocks in the same layout; only the islands change.
  */
 type Island = "page" | "section" | "carousel"
-type Block = "hero" | "richText" | "section" | "heading" | "carousel"
+type Block = "hero" | "richText" | "section" | "heading" | "carousel" | "slide"
 
 interface Props {
   x: number
@@ -33,6 +33,7 @@ const ancestors = {
   section: ["page", "section"],
   heading: ["page", "section"],
   carousel: ["page", "section", "carousel"],
+  slide: ["page", "section", "carousel"],
 } satisfies Record<Block, Island[]>
 
 const hydrated = (block: Block) => !slots.includes(block) && ancestors[block].some((a) => islands.includes(a))
@@ -45,6 +46,7 @@ const blockRects = {
   heading: { x: x + 24, y: y + 180, width: nested, height: 30 },
   section: { x: x + 12, y: y + 148, width: inner, height: 170 },
   carousel: { x: x + 24, y: y + 220, width: nested, height: 86 },
+  slide: { x: x + 36, y: y + 248, width: nested - 24, height: 34 },
 }
 const boundary = (island: Island) => {
   if (island === "page") return { x: x + 5, y: y + 29, width: width - 10, height: 296 }
@@ -79,7 +81,18 @@ const outset = (r: { x: number; y: number; width: number; height: number }, d: n
 <text class="mono" x={x + 36} y={y + 200}>Heading</text>
 <rect class={box("carousel")} {...blockRects.carousel} rx="4"></rect>
 <text class="mono" x={x + 36} y={y + 240}>Carousel</text>
-<rect class={ink("carousel")} x={x + 36} y={y + 248} width={nested - 24} height="34" rx="3"></rect>
+{
+  slots.includes("slide") ? (
+    <>
+      <rect class={box("slide")} {...blockRects.slide} rx="3" />
+      <text class="mono" x={x + 46} y={y + 270}>
+        RichText
+      </text>
+    </>
+  ) : (
+    <rect class={ink("carousel")} {...blockRects.slide} rx="3" />
+  )
+}
 <circle class={ink("carousel")} cx={mid - 12} cy={y + 294} r="2.5"></circle>
 <circle class={ink("carousel")} cx={mid} cy={y + 294} r="2.5"></circle>
 <circle class={ink("carousel")} cx={mid + 12} cy={y + 294} r="2.5"></circle>
