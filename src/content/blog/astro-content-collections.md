@@ -67,9 +67,9 @@ can be caught beforehand.
 
 In my case I chose to run typegen manually, rather than through Astro's content
 collections, because having at least some artifact of "source of truth for
-content shape" underneath source control has proved to be invaluable for
+content shape" under source control has proved to be invaluable for
 debugging issues. Generating those dynamically from content collections sweeps
-just bit too much of the distributed system under the rug.
+just a bit too much of the distributed system under the rug.
 
 Full schema validation would certainly be better -- but again, there's no
 first-class tooling for it so you're left with what exists in the open source
@@ -77,7 +77,7 @@ community, or to roll your own.
 
 ## Image bundling
 
-### Images cannot be bundled during content loading phase
+### Images cannot be bundled during the content loading phase
 
 Astro has a really stellar API for bundling images into static sites, optimizing
 them, converting, generating multiple sizes, passing `img` attributes, etc.
@@ -127,7 +127,7 @@ exactly what.
 
 ## Conclusion
 
-Contentful is a particularly opionated system, but there's some lessons about
+Contentful is a particularly opinionated system, but there are some lessons about
 API design here on the Astro side, especially when it comes to data fetching or
 caching layers.
 
@@ -138,7 +138,7 @@ My two biggest takeaways are:
    integrations which may have their own nuances and requirements around how
    this process works.
 2. Arbitrary domain knowledge like "images cannot be bundled during loader
-   phase" are probably something to be avoided if at all possible, since it not
+   phase" is probably something to be avoided if at all possible, since it not
    only limits the flexibility of how you can design the integration points with
    other systems, but it's completely undocumented and invisible until you try
    it.

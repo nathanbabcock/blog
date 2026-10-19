@@ -8,14 +8,14 @@ draft: false
 import Aside from "../../components/Aside.astro"
 import GithubRepo from "../../components/GithubRepo.astro"
 
-I feel a certain cognitive dissonance when working with IndexedDB in Typescript.
+I feel a certain cognitive dissonance when working with IndexedDB in TypeScript.
 
 <Aside>
   Let's refer to it as "IDB" from now on, the browser-native database, not to be confused with
   [`idb`](https://github.com/facebook/idb), the third-party wrapper library around it.
 </Aside>
 
-On the one hand, Typescript provides all the tools needed to model data and its transformations with incredible precision and
+On the one hand, TypeScript provides all the tools needed to model data and its transformations with incredible precision and
 fidelity. But it's frozen in time, and the schema only models the latest or
 "final" version of the database.
 
@@ -29,8 +29,8 @@ several versions back from a client that hasn't visited the site in a few months
 of version migrations is core to IDB's design, and the API forces you to deal
 with it from the moment you first open the database, when an [`upgradeneeded`](https://developer.mozilla.org/en-US/docs/Web/API/IDBOpenDBRequest/upgradeneeded_event)
 event will fire so you can work through the process of bringing an older DB
-version up to data with the canonical version that your codebase will be dealing
-with (the one that matches the Typescript schema you declared). That might
+version up to date with the canonical version that your codebase will be dealing
+with (the one that matches the TypeScript schema you declared). That might
 involve adding or removing object stores, adding new fields to or renaming
 existing stores, or running custom migration code to transform the structure of
 data from one version to the next.
@@ -43,7 +43,7 @@ new required field to an object store but you forget to add a default or
 fallback to old rows that don't have it yet, the schema will claim that the
 property is always there. But old data in the database won't match that
 assumption, potentially causing null pointer exceptions at runtime in places where
-Typescript claims it's impossible. There's a divergence between what the schema
+TypeScript claims it's impossible. There's a divergence between what the schema
 says and what the migrations say.
 
 The core
@@ -53,7 +53,7 @@ one big unchecked typecast.
 ## Native imperative API
 
 If you haven't had the pleasure, IDB's native API is imperative and
-object-oriented in style. It predates async and promises in Javascript, so it
+object-oriented in style. It predates async and promises in JavaScript, so it
 also uses callbacks pretty heavily.
 
 ```ts
@@ -67,7 +67,7 @@ request.onupgradeneeded = (event) => {
 }
 ```
 
-Typesript isn't able to statically analyze the resulting sequence of method
+TypeScript isn't able to statically analyze the resulting sequence of method
 calls in a way that narrows or infers type information. Every statement could
 potentially have unknown side effects or interact with the prototype chain in
 unpredictable ways, not to mention the potential effects of branching and
@@ -75,7 +75,7 @@ control flow around the statements, so it's not really safe to make any
 assumptions about it at compile time.
 
 What would it look like if we were able to maintain that typesafety through
-every successive version of the database, and get compile-time checking for whether
+every successive version of the database, and get compile-time checking for whether the
 declared schema matches what the migrations say? Or even infer
 the final schema directly from the migrations themselves as the source of truth?
 
@@ -107,7 +107,7 @@ configuration of primary keys, and more.
 Under the hood, the API translates directly to native, imperative IDB calls (in this case,
 [`IDBDatabase.createObjectStore`](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/createObjectStore))
 without any changes in behavior. It's just a different way of expressing the
-same thing which is more introspectable by the Typescript compiler.
+same thing which is more introspectable by the TypeScript compiler.
 
 <Aside>
   This
@@ -147,10 +147,10 @@ binding a generic type to infer and capture the literal types passed as
 parameters, such as object store name, primary key, etc.
 
 In a perfect world we'd use **partial inference** to require that the first generic
-is provided by the caller while the second one is inferred from the parameters passed. Unfortunately, inference in Typescript is
+is provided by the caller while the second one is inferred from the parameters passed. Unfortunately, inference in TypeScript is
 [all-or-nothing](https://github.com/microsoft/TypeScript/issues/10571), so we
-have to either infer all params or explictly provide all. This either kills the
-DX by requiring the programmer to repeat information twice, or cripples the system's ability to
+have to either infer all params or explicitly provide all. This either kills the
+DX by requiring the programmer to repeat information, or cripples the system's ability to
 capture the information it needs about the database.
 
 On the other hand, moving all these settings into the generic type parameter
@@ -188,7 +188,7 @@ still relatively readable at a glance.
 The next challenge is how to handle modifying an object store in subsequent
 migrations. This also isn't trivial; it's essentially a function that takes a
 _type_ as an input and returns a modified type as a result. This also can be
-modelled as a Typescript generic:
+modeled as a TypeScript generic:
 
 ```ts
 type NewSchema<OldSchema> = OldSchema & { myNewField: string }
