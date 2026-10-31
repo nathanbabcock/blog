@@ -5,8 +5,8 @@ export default defineConfig({
   worker: {
     name: "blog",
     previewUrls: false,
-    compatibilityDate: "2026-02-28",
-    compatibilityFlags: ["nodejs_compat", "global_fetch_strictly_public"],
+    compatibilityDate: "2026-10-31",
+    compatibilityFlags: ["global_fetch_strictly_public"],
     observability: {
       enabled: true,
     },
