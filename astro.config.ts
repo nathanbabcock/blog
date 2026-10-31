@@ -50,6 +50,13 @@ export default defineConfig({
   adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
   session: false,
 
+  vite: {
+    server: {
+      // Lets the giscus iframe load public/giscus-theme.css from the dev server.
+      cors: { origin: "https://giscus.app" },
+    },
+  },
+
   experimental: {
     contentIntellisense: true,
   },

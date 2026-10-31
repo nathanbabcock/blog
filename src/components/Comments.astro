@@ -2,6 +2,12 @@
 // Giscus comments backed by GitHub Discussions on the blog repo.
 // IDs come from https://giscus.app.
 const GISCUS_CATEGORY_ID = "DIC_kwDORbXaxc4DKFrp"
+// Giscus loads the theme in the visitor's browser, so in dev it can come from the local server
+// (which allows giscus.app via CORS in astro.config.ts).
+const GISCUS_THEME_URL = new URL(
+  "/giscus-theme.css",
+  import.meta.env.DEV ? Astro.url.origin : Astro.site,
+).href
 ---
 
 <section class="comments">
@@ -18,7 +24,7 @@ const GISCUS_CATEGORY_ID = "DIC_kwDORbXaxc4DKFrp"
     data-reactions-enabled="1"
     data-emit-metadata="0"
     data-input-position="top"
-    data-theme="dark_dimmed"
+    data-theme={GISCUS_THEME_URL}
     data-lang="en"
     data-loading="lazy"
     crossorigin="anonymous"
