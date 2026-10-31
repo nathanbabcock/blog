@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content"
 import { ArrowLeft } from "@lucide/astro"
 import BaseLayout from "../../layouts/BaseLayout.astro"
+import Comments from "../../components/Comments.astro"
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog")
@@ -39,6 +40,7 @@ const { Content } = await render(post)
   <div class="prose stagger" style="--i: 3">
     <Content />
   </div>
+  {!post.data.draft && <Comments />}
 </BaseLayout>
 
 <style>
