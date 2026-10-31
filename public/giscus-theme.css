@@ -1,65 +1,46 @@
-/* Giscus theme matching the site palette (see src/styles/global.css).
- * Loaded by giscus inside its iframe, so it needs the CORS header in public/_headers. */
+/* Giscus's dark_dimmed theme with its cool greys swapped for the site's warm tones
+ * (see src/styles/global.css). Loaded by giscus inside its iframe, so it needs the
+ * CORS header in public/_headers. */
 @import url("https://giscus.app/themes/dark_dimmed.css");
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap");
 
 main {
-  --color-fg-default: #e0d6cc;
+  --color-fg-default: #d0c5ba;
   --color-fg-muted: #8a7e72;
   --color-fg-subtle: #6f655b;
 
-  --color-canvas-default: #191614;
-  --color-canvas-overlay: #211d19;
-  --color-canvas-inset: #15120f;
-  --color-canvas-subtle: #211d19;
+  --color-canvas-default: #211d19;
+  --color-canvas-overlay: #2b2621;
+  --color-canvas-inset: #191614;
+  --color-canvas-subtle: #2b2621;
 
-  --color-border-default: #3a332c;
-  --color-border-muted: #2b2621;
-  --color-neutral-muted: #8a7e7233;
+  --color-border-default: #463e36;
+  --color-border-muted: #362f29;
+  --color-neutral-muted: #8a7e7266;
 
   --color-accent-fg: #c49a6c;
-  --color-accent-emphasis: #c49a6c;
+  --color-accent-emphasis: #a87f52;
   --color-accent-muted: #c49a6c66;
   --color-accent-subtle: #c49a6c1a;
 
-  --color-btn-text: #e0d6cc;
-  --color-btn-bg: #2b2621;
-  --color-btn-border: #3a332c;
-  --color-btn-hover-bg: #362f29;
+  --color-btn-text: #d0c5ba;
+  --color-btn-bg: #362f29;
+  --color-btn-border: #e0d6cc1a;
+  --color-btn-hover-bg: #463e36;
   --color-btn-hover-border: #8a7e72;
-  --color-btn-active-bg: #3a332c;
-  --color-btn-active-border: #8a7e72;
-  --color-btn-selected-bg: #211d19;
+  --color-btn-active-bg: #3e3630;
+  --color-btn-active-border: #6f655b;
+  --color-btn-selected-bg: #2b2621;
 
-  --color-btn-primary-text: #191614;
-  --color-btn-primary-bg: #c49a6c;
-  --color-btn-primary-border: #c49a6c;
-  --color-btn-primary-hover-bg: #d4aa7c;
-  --color-btn-primary-hover-border: #d4aa7c;
-  --color-btn-primary-selected-bg: #c49a6c;
-  --color-btn-primary-disabled-text: #19161499;
-  --color-btn-primary-disabled-bg: #c49a6c66;
-  --color-btn-primary-disabled-border: #c49a6c33;
+  --color-btn-primary-bg: #a87f52;
+  --color-btn-primary-hover-bg: #c49a6c;
+  --color-btn-primary-selected-bg: #a87f52;
+  --color-btn-primary-disabled-bg: #a87f5299;
 
   --color-action-list-item-default-hover-bg: #8a7e721f;
-  --color-segmented-control-bg: #2b2621;
-  --color-segmented-control-button-bg: #191614;
-  --color-segmented-control-button-selected-border: #8a7e72;
+  --color-segmented-control-bg: #6f655b1a;
+  --color-segmented-control-button-bg: #211d19;
+  --color-segmented-control-button-selected-border: #6f655b;
 
-  --color-social-reaction-bg-hover: #2b2621;
-  --color-social-reaction-bg-reacted-hover: #c49a6c33;
-
-  font-family: "Lora", serif;
-}
-
-main .markdown,
-main textarea,
-main button,
-main input {
-  font-family: "Lora", serif;
-}
-
-main .markdown code,
-main .markdown pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-scale-gray-7: #362f29;
+  --color-scale-blue-8: #5c4630;
 }
