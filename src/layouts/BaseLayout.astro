@@ -71,6 +71,16 @@ const jsonLd = publishedTime
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <Font cssVariable="--font-lora" preload />
     <ClientRouter />
+    {
+      import.meta.env.PROD && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "4ef1fea9fa404d8ea7954b845fc104fa"}'
+        />
+      )
+    }
   </head>
   <body>
     <main>
