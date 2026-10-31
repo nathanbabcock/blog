@@ -44,3 +44,8 @@ main {
   --color-scale-gray-7: #362f29;
   --color-scale-blue-8: #5c4630;
 }
+
+/* Tints GitHub's grey Mona loading animation toward the site's tan and warm grey. */
+main .gsc-loading-image {
+  filter: sepia(0.5) saturate(5.3) hue-rotate(-36deg) brightness(0.76);
+}
