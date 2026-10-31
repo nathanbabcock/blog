@@ -48,6 +48,7 @@ export default defineConfig({
   ],
 
   adapter: cloudflare({ imageService: "compile", prerenderEnvironment: "node" }),
+  session: false,
 
   experimental: {
     contentIntellisense: true,
